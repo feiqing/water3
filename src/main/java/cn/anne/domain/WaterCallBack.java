@@ -1,0 +1,17 @@
+package cn.anne.domain;
+
+/**
+ * @author qingfei
+ * @date 2022/06/02
+ */
+@FunctionalInterface
+public interface WaterCallBack<T, R> {
+
+    /**
+     * 回调方法
+     *
+     * @param t
+     * @return
+     */
+    R callBack(T t);
+}
