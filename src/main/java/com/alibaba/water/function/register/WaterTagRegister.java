@@ -9,7 +9,6 @@ import com.google.common.collect.Maps;
 /**
  * 1、一个Impl有多个tag（复用）
  * 2、同一个接口的impl中可能存在多个impl对应同一个tag（叠加），优先级问题
- * 3、优先级 这次暂时不考虑
  *
  * @author qingfei
  * @date 2022/05/07

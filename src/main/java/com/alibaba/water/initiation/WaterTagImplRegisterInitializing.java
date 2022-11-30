@@ -7,6 +7,7 @@ import com.alibaba.water.annotation.WaterBase;
 import com.alibaba.water.annotation.WaterInterface;
 import com.alibaba.water.annotation.WaterScenario;
 import com.alibaba.water.domain.WaterContext;
+import com.alibaba.water.domain.constant.WaterConstants;
 import com.alibaba.water.function.register.WaterBaseRegister;
 import com.alibaba.water.function.register.WaterTagRegister;
 import com.alibaba.water.util.ClassScanUtils;
@@ -22,12 +23,10 @@ import org.springframework.util.StringUtils;
 @Component
 public class WaterTagImplRegisterInitializing implements InitializingBean {
 
-    private static final String SCAN_PATH = "water.scanPath";
-
     @Override
     public void afterPropertiesSet() throws Exception {
         Properties properties = PropertiesLoaderUtils.loadAllProperties("application.properties");
-        String scanPath = (String)properties.get(SCAN_PATH);
+        String scanPath = (String)properties.get(WaterConstants.SCAN_PATH);
         WaterContext.setScanPath(scanPath);
         Set<Class<?>> baseClassSet = ClassScanUtils.getTypeAnnotation(scanPath, WaterBase.class);
         Set<Class<?>> interfaceClassSet = ClassScanUtils.getTypeAnnotation(scanPath, WaterInterface.class);

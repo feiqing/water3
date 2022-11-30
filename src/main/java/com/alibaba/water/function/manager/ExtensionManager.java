@@ -16,6 +16,8 @@ import com.alibaba.water.function.reducer.Matcher;
 import com.alibaba.water.function.register.WaterBaseRegister;
 
 import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,8 @@ import org.springframework.util.StringUtils;
  * @date 2022/06/02
  */
 public class ExtensionManager {
+
+    private static final Logger log = LoggerFactory.getLogger(ExtensionManager.class);
 
     public static  <T, R, I> R doExecute(Class<I> extensionClass, WaterCallBack<I, T> callBack, Matcher<T, R> matcher) {
         List<Class<?>> implClassList = getImplClassSortedList(extensionClass);
@@ -82,6 +86,7 @@ public class ExtensionManager {
             if (baseClass != null) {
                 return Collections.singletonList(baseClass);
             }
+            log.error("no extension implement find, bizScenario:{}, extension:{}", bizScenario, extensionClass.getName());
             throw new WaterException("没找到对应tag的实现类");
         }
         return implClassList;
@@ -123,6 +128,7 @@ public class ExtensionManager {
         for (Class<?> implClass : implClassList) {
             if (implClass.isAnnotationPresent(WaterPriority.class)) {
                 hasPriority = true;
+                break;
             }
         }
         if (!hasPriority) {

@@ -2,7 +2,11 @@ package com.alibaba.water.function.register;
 
 import java.util.Map;
 
+import com.alibaba.water.exception.WaterException;
+
 import com.google.common.collect.Maps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author qingfei
@@ -10,11 +14,14 @@ import com.google.common.collect.Maps;
  */
 public class WaterBaseRegister {
 
+    private static final Logger log = LoggerFactory.getLogger(WaterBaseRegister.class);
+
     private static Map<String, Class<?>> waterBaseMap = Maps.newConcurrentMap();
 
     public static void register(String interfaceName, Class<?> baseClass) {
         if (waterBaseMap.containsKey(interfaceName)) {
-            // todo 打base 多个重复日志error
+            log.error("extension has more than one base implement, extension:{}", interfaceName);
+            throw new WaterException("同一个扩展点存在多个base实现类");
         }
         waterBaseMap.put(interfaceName, baseClass);
     }
