@@ -1,5 +1,8 @@
 package com.alibaba.water.function.manager;
 
+import java.lang.invoke.SerializedLambda;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,8 +35,38 @@ public class ExtensionManager {
 
     private static final Logger log = LoggerFactory.getLogger(ExtensionManager.class);
 
-    public static  <T, R, I> R doExecute(Class<I> extensionClass, WaterCallBack<I, T> callBack, Matcher<T, R> matcher) {
-        List<Class<?>> implClassList = getImplClassSortedList(extensionClass);
+    public static <T, R, I> R doExecute(Class<I> extensionClass, WaterCallBack<I, T> callBack, Matcher<T, R> matcher) {
+        List<Class<?>> implClassList = getImplClassSortedList(extensionClass,null);
+        List<T> resultList = Lists.newArrayListWithCapacity(8);
+        for (Class<?> implClass : implClassList) {
+            T t = getImplResult(callBack, implClass);
+            resultList.add(t);
+            if (matcher.willBreak(t)) {
+                break;
+            }
+        }
+        R r = null;
+        if (!CollectionUtils.isEmpty(resultList)) {
+            r = matcher.reduce(resultList);
+        }
+        return r;
+    }
+
+    public static <T, R, I> R doNewExecute(Class<I> extensionClass, WaterCallBack<I, T> callBack, Matcher<T, R> matcher) {
+        String invokeMethod = null;
+        try {
+            Method writeReplace = callBack.getClass().getDeclaredMethod("writeReplace");
+            writeReplace.setAccessible(true);
+            Object callBackObject =  writeReplace.invoke(callBack);
+            SerializedLambda serializedLambda = (SerializedLambda)callBackObject;
+            String tempMethodName = serializedLambda.getImplMethodName();
+            if(!tempMethodName.isEmpty() && tempMethodName.contains("lambda$")){
+                invokeMethod = tempMethodName.substring("lambda$".length(),tempMethodName.indexOf("$","lambda$".length()));
+            }
+        } catch (Throwable e){
+            throw new RuntimeException(e);
+        }
+        List<Class<?>> implClassList = getImplClassSortedList(extensionClass,invokeMethod);
         List<T> resultList = Lists.newArrayListWithCapacity(8);
         for (Class<?> implClass : implClassList) {
             T t = getImplResult(callBack, implClass);
@@ -50,7 +83,7 @@ public class ExtensionManager {
     }
 
     public static <T, R, I> Void doExecuteVoidReturnType(Class<I> extensionClass, WaterCall<I> callBack, Matcher<T, R> matcher) {
-        List<Class<?>> implClassList = getImplClassSortedList(extensionClass);
+        List<Class<?>> implClassList = getImplClassSortedList(extensionClass,null);
         for (Class<?> implClass : implClassList) {
             T t = getImplResult(callBack, implClass);
             if (matcher.willBreak(t)) {
@@ -62,22 +95,22 @@ public class ExtensionManager {
 
     private static <T, I> T getImplResult(WaterCallBack<I, T> callBack, Class<?> implClass) {
         Object impl = getImpl(implClass);
-        return callBack.callBack((I)impl);
+        return callBack.callBack((I) impl);
     }
 
     private static <T, I> T getImplResult(WaterCall<I> callBack, Class<?> implClass) {
         Object impl = getImpl(implClass);
-        callBack.callBack((I)impl);
+        callBack.callBack((I) impl);
         return null;
     }
 
-    private static List<Class<?>> getImplClassSortedList(Class<?> extensionClass) {
-        List<Class<?>> implClassList = getImplClassList(extensionClass);
+    private static List<Class<?>> getImplClassSortedList(Class<?> extensionClass,String methodName) {
+        List<Class<?>> implClassList = getImplClassList(extensionClass,methodName);
         sortWithPriority(implClassList);
         return implClassList;
     }
 
-    private static List<Class<?>> getImplClassList(Class<?> extensionClass) {
+    private static List<Class<?>> getImplClassList(Class<?> extensionClass,String methodName) {
         String bizScenario = WaterContext.getBizScenario();
         List<Class<?>> implClassList = WaterTagRegister.getImplClassListByInterfaceAndTag(extensionClass.getName(), bizScenario);
         if (CollectionUtils.isEmpty(implClassList)) {
@@ -112,7 +145,7 @@ public class ExtensionManager {
         }
         className = implClass.getSimpleName();
         String beanName;
-        if(className.length() > 1) {
+        if (className.length() > 1) {
             beanName = className.substring(0, 1).toLowerCase() + className.substring(1);
         } else {
             beanName = className.toLowerCase();
@@ -136,9 +169,9 @@ public class ExtensionManager {
         }
         implClassList.sort((a, b) -> {
             int p1 = a.isAnnotationPresent(WaterPriority.class) ? a.getAnnotation(WaterPriority.class).value() :
-                WaterConstants.PRIORITY_VALUE_DEFAULT;
+                    WaterConstants.PRIORITY_VALUE_DEFAULT;
             int p2 = b.isAnnotationPresent(WaterPriority.class) ? b.getAnnotation(WaterPriority.class).value() :
-                WaterConstants.PRIORITY_VALUE_DEFAULT;
+                    WaterConstants.PRIORITY_VALUE_DEFAULT;
             return p1 - p2;
         });
     }
