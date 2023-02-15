@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.alibaba.water.domain.WaterRouterInterface;
+import com.alibaba.water.util.SpringBeanUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -24,7 +25,7 @@ public class WaterTagRegister {
      * 方法级别的业务身份路由，业务自定义路由
      * <scenario,<mathod,routeImplementClass>>
      */
-    private static Map<String, WaterRouterInterface> methodRouteCustomImplMap = Maps.newConcurrentMap();
+    private static Map<String, Class<? extends WaterRouterInterface>> methodRouteCustomImplMap = Maps.newConcurrentMap();
 
     public static void register(String interfaceName, String tag, Class<?> implClass) {
         Map<String, List<Class<?>>> tagImplMap = interfaceTagImplMap.getOrDefault(interfaceName, Maps.newConcurrentMap());
@@ -38,7 +39,7 @@ public class WaterTagRegister {
         }
     }
 
-    public static void register(String tag, WaterRouterInterface router) {
+    public static void register(String tag, Class<? extends WaterRouterInterface> router) {
         if(!methodRouteCustomImplMap.containsKey(tag)){
             methodRouteCustomImplMap.put(tag,router);
         }
@@ -47,7 +48,8 @@ public class WaterTagRegister {
     public static List<Class<?>> getImplClassListByInterfaceAndTag(String interfaceName, String tag, String method) {
         if (methodRouteCustomImplMap.containsKey(tag)) {
             //自定义方法级别路由
-            WaterRouterInterface waterRouterInterface = methodRouteCustomImplMap.get(tag);
+            Class<? extends WaterRouterInterface> waterRouteClass = methodRouteCustomImplMap.get(tag);
+            WaterRouterInterface waterRouterInterface = SpringBeanUtils.getBean(waterRouteClass);
             if (waterRouterInterface != null) {
                 Class<?> implClass = waterRouterInterface.route(method);
                 List<Class<?>> routeList = new ArrayList<>();

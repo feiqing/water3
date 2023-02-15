@@ -66,8 +66,7 @@ public class WaterTagImplRegisterInitializing implements InitializingBean {
         WaterRouter annotation = routeClass.getAnnotation(WaterRouter.class);
         String scenario = annotation.scenario();
         Class<? extends WaterRouterInterface> waterRouteClass = annotation.routeClass();
-        WaterRouterInterface waterRouterInterface = SpringBeanUtils.getBean(waterRouteClass);
-        WaterTagRegister.register(scenario, waterRouterInterface);
+        WaterTagRegister.register(scenario, waterRouteClass);
     }
 
     private void registerWaterBaseImpl(Class<?> interfaceClass, Set<Class<?>> baseClassSet) {

@@ -13,4 +13,9 @@ public interface WaterScenarioParser<T extends WaterParamRequest> {
      * @return
      */
     String parser(T t);
+
+    default String parserSubScenario(T t) {
+        return null;
+    }
+
 }

@@ -29,6 +29,10 @@ public class WaterContext {
         bizScenario.set(code);
     }
 
+    public static void setSubBizScenario(String subCode) {
+        subBizScenario.set(subCode);
+    }
+
     public static void setBizScenario(ThreadLocal<String> bizScenario) {
         WaterContext.bizScenario = bizScenario;
     }

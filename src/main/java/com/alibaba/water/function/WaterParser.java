@@ -70,6 +70,10 @@ public class WaterParser {
                 throw new WaterException("biz scenario is not exist");
             }
             WaterContext.setBizScenario(bizCode);
+
+            Method parserSub = bizParserClass.getDeclaredMethod("parserSubScenario", WaterParamRequest.class);
+            String subScenario = (String)parserSub.invoke(obj, waterParamRequest);
+            WaterContext.setSubBizScenario(subScenario);
         } catch (Exception e) {
             throw new WaterException(e.getMessage());
         }
