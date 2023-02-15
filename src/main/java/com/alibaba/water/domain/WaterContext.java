@@ -8,10 +8,17 @@ public class WaterContext {
 
     private static ThreadLocal<String> bizScenario = new ThreadLocal<>();
 
+    private static ThreadLocal<String> subBizScenario = new ThreadLocal<>();
+
+
     private static ThreadLocal<String> scanPath = new ThreadLocal<>();
 
     public static String getBizScenario() {
         return bizScenario.get();
+    }
+
+    public static String getSubBizScenario(){
+        return subBizScenario.get();
     }
 
     public static String getPath() {

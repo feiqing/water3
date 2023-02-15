@@ -3,14 +3,17 @@ package com.alibaba.water.initiation;
 import java.util.Properties;
 import java.util.Set;
 
+import com.alibaba.water.annotation.WaterRouter;
 import com.alibaba.water.annotation.WaterBase;
 import com.alibaba.water.annotation.WaterInterface;
 import com.alibaba.water.annotation.WaterScenario;
 import com.alibaba.water.domain.WaterContext;
+import com.alibaba.water.domain.WaterRouterInterface;
 import com.alibaba.water.domain.constant.WaterConstants;
 import com.alibaba.water.function.register.WaterBaseRegister;
 import com.alibaba.water.function.register.WaterTagRegister;
 import com.alibaba.water.util.ClassScanUtils;
+import com.alibaba.water.util.SpringBeanUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.stereotype.Component;
@@ -26,17 +29,21 @@ public class WaterTagImplRegisterInitializing implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         Properties properties = PropertiesLoaderUtils.loadAllProperties("application.properties");
-        String scanPath = (String)properties.get(WaterConstants.SCAN_PATH);
+        String scanPath = (String) properties.get(WaterConstants.SCAN_PATH);
         WaterContext.setScanPath(scanPath);
         Set<Class<?>> baseClassSet = ClassScanUtils.getTypeAnnotation(scanPath, WaterBase.class);
         Set<Class<?>> interfaceClassSet = ClassScanUtils.getTypeAnnotation(scanPath, WaterInterface.class);
         Set<Class<?>> tagImplClassSet = ClassScanUtils.getTypeAnnotation(scanPath, WaterScenario.class);
+        Set<Class<?>> routeCustomClassSet = ClassScanUtils.getTypeAnnotation(scanPath, WaterRouter.class);
         for (Class<?> interfaceClass : interfaceClassSet) {
             if (!interfaceClass.isInterface()) {
                 continue;
             }
             registerWaterInterfaceTagImpl(interfaceClass, tagImplClassSet);
             registerWaterBaseImpl(interfaceClass, baseClassSet);
+        }
+        for (Class<?> routeClass : routeCustomClassSet) {
+            registerWaterMethodTagImpl(routeClass);
         }
     }
 
@@ -53,6 +60,14 @@ public class WaterTagImplRegisterInitializing implements InitializingBean {
                 }
             }
         }
+    }
+
+    private void registerWaterMethodTagImpl(Class<?> routeClass) {
+        WaterRouter annotation = routeClass.getAnnotation(WaterRouter.class);
+        String scenario = annotation.scenario();
+        Class<? extends WaterRouterInterface> waterRouteClass = annotation.routeClass();
+        WaterRouterInterface waterRouterInterface = SpringBeanUtils.getBean(waterRouteClass);
+        WaterTagRegister.register(scenario, waterRouterInterface);
     }
 
     private void registerWaterBaseImpl(Class<?> interfaceClass, Set<Class<?>> baseClassSet) {

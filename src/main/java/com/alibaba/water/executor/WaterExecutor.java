@@ -37,7 +37,7 @@ public class WaterExecutor {
     }
 
     public <T, R, I> R execute(Class<I> extensionClass, WaterCallBack<I, T> callBack, Matcher<T, R> matcher) {
-        return ExtensionManager.doNewExecute(extensionClass, callBack, matcher);
+        return ExtensionManager.doExecute(extensionClass, callBack, matcher);
     }
 
     public <T, R, I> Void executeVoidReturnType(Class<I> extensionClass, WaterCall<I> callBack) {

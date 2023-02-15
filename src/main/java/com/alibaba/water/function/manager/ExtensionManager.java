@@ -36,37 +36,13 @@ public class ExtensionManager {
     private static final Logger log = LoggerFactory.getLogger(ExtensionManager.class);
 
     public static <T, R, I> R doExecute(Class<I> extensionClass, WaterCallBack<I, T> callBack, Matcher<T, R> matcher) {
-        List<Class<?>> implClassList = getImplClassSortedList(extensionClass,null);
-        List<T> resultList = Lists.newArrayListWithCapacity(8);
-        for (Class<?> implClass : implClassList) {
-            T t = getImplResult(callBack, implClass);
-            resultList.add(t);
-            if (matcher.willBreak(t)) {
-                break;
-            }
+        List<Class<?>> implClassList = null;
+        if (WaterTagRegister.isCustomRouter(WaterContext.getBizScenario())) {
+            String methodName = getMethod(callBack);
+            implClassList = getImplClassSortedList(extensionClass, methodName);
+        } else {
+            implClassList = getImplClassSortedList(extensionClass);
         }
-        R r = null;
-        if (!CollectionUtils.isEmpty(resultList)) {
-            r = matcher.reduce(resultList);
-        }
-        return r;
-    }
-
-    public static <T, R, I> R doNewExecute(Class<I> extensionClass, WaterCallBack<I, T> callBack, Matcher<T, R> matcher) {
-        String invokeMethod = null;
-        try {
-            Method writeReplace = callBack.getClass().getDeclaredMethod("writeReplace");
-            writeReplace.setAccessible(true);
-            Object callBackObject =  writeReplace.invoke(callBack);
-            SerializedLambda serializedLambda = (SerializedLambda)callBackObject;
-            String tempMethodName = serializedLambda.getImplMethodName();
-            if(!tempMethodName.isEmpty() && tempMethodName.contains("lambda$")){
-                invokeMethod = tempMethodName.substring("lambda$".length(),tempMethodName.indexOf("$","lambda$".length()));
-            }
-        } catch (Throwable e){
-            throw new RuntimeException(e);
-        }
-        List<Class<?>> implClassList = getImplClassSortedList(extensionClass,invokeMethod);
         List<T> resultList = Lists.newArrayListWithCapacity(8);
         for (Class<?> implClass : implClassList) {
             T t = getImplResult(callBack, implClass);
@@ -83,7 +59,7 @@ public class ExtensionManager {
     }
 
     public static <T, R, I> Void doExecuteVoidReturnType(Class<I> extensionClass, WaterCall<I> callBack, Matcher<T, R> matcher) {
-        List<Class<?>> implClassList = getImplClassSortedList(extensionClass,null);
+        List<Class<?>> implClassList = getImplClassSortedList(extensionClass);
         for (Class<?> implClass : implClassList) {
             T t = getImplResult(callBack, implClass);
             if (matcher.willBreak(t)) {
@@ -104,13 +80,38 @@ public class ExtensionManager {
         return null;
     }
 
-    private static List<Class<?>> getImplClassSortedList(Class<?> extensionClass,String methodName) {
-        List<Class<?>> implClassList = getImplClassList(extensionClass,methodName);
+    private static List<Class<?>> getImplClassSortedList(Class<?> extensionClass) {
+        List<Class<?>> implClassList = getImplClassList(extensionClass);
         sortWithPriority(implClassList);
         return implClassList;
     }
 
-    private static List<Class<?>> getImplClassList(Class<?> extensionClass,String methodName) {
+    private static List<Class<?>> getImplClassSortedList(Class<?> extensionClass, String methodName) {
+        List<Class<?>> implClassList = getImplClassList(extensionClass, methodName);
+        sortWithPriority(implClassList);
+        return implClassList;
+    }
+
+
+    private static String getMethod(WaterCallBack callBack) {
+        String invokeMethod = null;
+        try {
+            Method writeReplace = callBack.getClass().getDeclaredMethod("writeReplace");
+            writeReplace.setAccessible(true);
+            Object callBackObject = writeReplace.invoke(callBack);
+            SerializedLambda serializedLambda = (SerializedLambda) callBackObject;
+            String tempMethodName = serializedLambda.getImplMethodName();
+            if (!tempMethodName.isEmpty() && tempMethodName.contains("lambda$")) {
+                invokeMethod = tempMethodName.substring("lambda$".length(), tempMethodName.indexOf("$", "lambda$".length()));
+            }
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+        return invokeMethod;
+    }
+
+
+    private static List<Class<?>> getImplClassList(Class<?> extensionClass) {
         String bizScenario = WaterContext.getBizScenario();
         List<Class<?>> implClassList = WaterTagRegister.getImplClassListByInterfaceAndTag(extensionClass.getName(), bizScenario);
         if (CollectionUtils.isEmpty(implClassList)) {
@@ -124,6 +125,22 @@ public class ExtensionManager {
         }
         return implClassList;
     }
+
+    private static List<Class<?>> getImplClassList(Class<?> extensionClass, String methodName) {
+        String bizScenario = WaterContext.getBizScenario();
+        List<Class<?>> implClassList = WaterTagRegister.getImplClassListByInterfaceAndTag(extensionClass.getName(), bizScenario, methodName);
+        if (CollectionUtils.isEmpty(implClassList)) {
+            // 找base实现类
+            Class<?> baseClass = WaterBaseRegister.getBaseClass(extensionClass.getName());
+            if (baseClass != null) {
+                return Collections.singletonList(baseClass);
+            }
+            log.error("no extension implement find, bizScenario:{}, extension:{}", bizScenario, extensionClass.getName());
+            throw new WaterException("没找到对应tag的实现类");
+        }
+        return implClassList;
+    }
+
 
     private static Object getImpl(Class<?> implClass) {
         if (implClass.isAnnotationPresent(WaterBase.class)) {
