@@ -1,5 +1,6 @@
 package com.alibaba.water.function.manager;
 
+import java.beans.Introspector;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
