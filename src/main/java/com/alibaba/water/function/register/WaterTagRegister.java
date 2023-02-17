@@ -51,10 +51,7 @@ public class WaterTagRegister {
             Class<? extends WaterRouterInterface> waterRouteClass = methodRouteCustomImplMap.get(tag);
             WaterRouterInterface waterRouterInterface = SpringBeanUtils.getBean(waterRouteClass);
             if (waterRouterInterface != null) {
-                Class<?> implClass = waterRouterInterface.route(method);
-                List<Class<?>> routeList = new ArrayList<>();
-                routeList.add(implClass);
-                return routeList;
+                return waterRouterInterface.route(method);
             }
             return Collections.emptyList();
         } else {
