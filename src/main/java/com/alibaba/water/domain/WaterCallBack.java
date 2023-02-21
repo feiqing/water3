@@ -1,6 +1,8 @@
 package com.alibaba.water.domain;
 
 import java.io.Serializable;
+import java.lang.invoke.SerializedLambda;
+import java.lang.reflect.Method;
 
 /**
  * @author qingfei
@@ -16,4 +18,5 @@ public interface WaterCallBack<T, R> extends Serializable {
      * @return
      */
     R callBack(T t);
+
 }

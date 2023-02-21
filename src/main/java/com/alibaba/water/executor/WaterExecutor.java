@@ -8,6 +8,9 @@ import com.alibaba.water.function.manager.ExtensionManager;
 import com.alibaba.water.function.reducer.Matcher;
 import com.alibaba.water.function.reducer.Reducer;
 
+import java.lang.reflect.Method;
+import java.util.function.Function;
+
 /**
  * @author qingfei
  * @date 2022/06/02
@@ -38,6 +41,14 @@ public class WaterExecutor {
 
     public <T, R, I> R execute(Class<I> extensionClass, WaterCallBack<I, T> callBack, Matcher<T, R> matcher) {
         return ExtensionManager.doExecute(extensionClass, callBack, matcher);
+    }
+
+    public <T, I> T execute(Class<I> extensionClass, WaterCallBack<I, T> callBack, String method) {
+        return execute(extensionClass, callBack, method,Reducer.firstOf());
+    }
+
+    public <T, R, I> R execute(Class<I> extensionClass, WaterCallBack<I, T> callBack,String method, Matcher<T, R> matcher) {
+        return ExtensionManager.doExecute(extensionClass, callBack,method, matcher);
     }
 
     public <T, R, I> Void executeVoidReturnType(Class<I> extensionClass, WaterCall<I> callBack) {

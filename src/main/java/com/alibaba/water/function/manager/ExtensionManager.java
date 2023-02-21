@@ -39,7 +39,28 @@ public class ExtensionManager {
     public static <T, R, I> R doExecute(Class<I> extensionClass, WaterCallBack<I, T> callBack, Matcher<T, R> matcher) {
         List<Class<?>> implClassList = null;
         if (WaterTagRegister.isCustomRouter(WaterContext.getBizScenario())) {
-            String methodName = getMethod(callBack);
+            implClassList = getImplClassSortedList(extensionClass, null);
+        } else {
+            implClassList = getImplClassSortedList(extensionClass);
+        }
+        List<T> resultList = Lists.newArrayListWithCapacity(8);
+        for (Class<?> implClass : implClassList) {
+            T t = getImplResult(callBack, implClass);
+            resultList.add(t);
+            if (matcher.willBreak(t)) {
+                break;
+            }
+        }
+        R r = null;
+        if (!CollectionUtils.isEmpty(resultList)) {
+            r = matcher.reduce(resultList);
+        }
+        return r;
+    }
+
+    public static <T, R, I> R doExecute(Class<I> extensionClass, WaterCallBack<I, T> callBack, String methodName, Matcher<T, R> matcher) {
+        List<Class<?>> implClassList = null;
+        if (WaterTagRegister.isCustomRouter(WaterContext.getBizScenario())) {
             implClassList = getImplClassSortedList(extensionClass, methodName);
         } else {
             implClassList = getImplClassSortedList(extensionClass);
@@ -70,6 +91,26 @@ public class ExtensionManager {
         return null;
     }
 
+
+    private static String getMethod(Method routeMethod) {
+        return routeMethod.getName();
+//        String invokeMethod = null;
+//        try {
+//            routeMethod.getName();
+//            Method writeReplace = callBack.getClass().getDeclaredMethod("writeReplace");
+//            writeReplace.setAccessible(true);
+//            Object callBackObject = writeReplace.invoke(this);
+//            SerializedLambda serializedLambda = (SerializedLambda) callBackObject;
+//            String tempMethodName = serializedLambda.getImplMethodName();
+//            if (!tempMethodName.isEmpty() && tempMethodName.contains("lambda$")) {
+//                invokeMethod = tempMethodName.substring("lambda$".length(), tempMethodName.indexOf("$", "lambda$".length()));
+//            }
+//        } catch (Throwable e) {
+//            throw new RuntimeException(e);
+//        }
+//        return invokeMethod;
+    }
+
     private static <T, I> T getImplResult(WaterCallBack<I, T> callBack, Class<?> implClass) {
         Object impl = getImpl(implClass);
         return callBack.callBack((I) impl);
@@ -91,24 +132,6 @@ public class ExtensionManager {
         List<Class<?>> implClassList = getImplClassList(extensionClass, methodName);
         sortWithPriority(implClassList);
         return implClassList;
-    }
-
-
-    private static String getMethod(WaterCallBack callBack) {
-        String invokeMethod = null;
-        try {
-            Method writeReplace = callBack.getClass().getDeclaredMethod("writeReplace");
-            writeReplace.setAccessible(true);
-            Object callBackObject = writeReplace.invoke(callBack);
-            SerializedLambda serializedLambda = (SerializedLambda) callBackObject;
-            String tempMethodName = serializedLambda.getImplMethodName();
-            if (!tempMethodName.isEmpty() && tempMethodName.contains("lambda$")) {
-                invokeMethod = tempMethodName.substring("lambda$".length(), tempMethodName.indexOf("$", "lambda$".length()));
-            }
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
-        return invokeMethod;
     }
 
 
