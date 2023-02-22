@@ -8,5 +8,5 @@ import java.util.List;
  * @since 2023/2/15
  */
 public interface WaterRouterInterface {
-    List<Class<?>> route(String interfaceName, String method);
+    List<Class<?>> route(String subScenario,String interfaceName, String method);
 }

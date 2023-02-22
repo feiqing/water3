@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.water.domain.WaterContext;
 import com.alibaba.water.domain.WaterRouterInterface;
 import com.alibaba.water.util.SpringBeanUtils;
 import com.google.common.collect.Lists;
@@ -51,7 +52,7 @@ public class WaterTagRegister {
             Class<? extends WaterRouterInterface> waterRouteClass = methodRouteCustomImplMap.get(tag);
             WaterRouterInterface waterRouterInterface = SpringBeanUtils.getBean(waterRouteClass);
             if (waterRouterInterface != null) {
-                return waterRouterInterface.route(interfaceName, method);
+                return waterRouterInterface.route(WaterContext.getSubBizScenario(),interfaceName, method);
             }
             return Collections.emptyList();
         } else {
