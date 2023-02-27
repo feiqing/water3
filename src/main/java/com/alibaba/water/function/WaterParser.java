@@ -73,8 +73,9 @@ public class WaterParser {
 
             Method parserSub = bizParserClass.getMethod("parserSubScenario", WaterParamRequest.class);
             String subScenario = null;
-            if (parserSub.invoke(obj, waterParamRequest) != null) {
-                subScenario = (String) parserSub.invoke(obj, waterParamRequest);
+            Object invoke = parserSub.invoke(obj, waterParamRequest);
+            if (invoke != null) {
+                subScenario = (String) invoke;
             }
             WaterContext.setSubBizScenario(subScenario);
         } catch (Exception e) {
