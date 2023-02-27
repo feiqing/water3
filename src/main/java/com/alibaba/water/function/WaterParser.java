@@ -71,14 +71,14 @@ public class WaterParser {
             }
             WaterContext.setBizScenario(bizCode);
 
-            Method parserSub = bizParserClass.getDeclaredMethod("parserSubScenario", WaterParamRequest.class);
+            Method parserSub = bizParserClass.getMethod("parserSubScenario", WaterParamRequest.class);
             String subScenario = null;
             if (parserSub.invoke(obj, waterParamRequest) != null) {
                 subScenario = (String) parserSub.invoke(obj, waterParamRequest);
             }
             WaterContext.setSubBizScenario(subScenario);
         } catch (Exception e) {
-            throw new WaterException(e.getMessage());
+            throw new WaterException(e.getMessage(), e.getCause());
         }
         return bizCode;
     }
