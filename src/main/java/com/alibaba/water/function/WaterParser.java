@@ -1,14 +1,14 @@
 package com.alibaba.water.function;
 
-import java.lang.reflect.Method;
-import java.util.Set;
-
-import com.alibaba.water.exception.WaterException;
 import com.alibaba.water.domain.WaterContext;
 import com.alibaba.water.domain.WaterParamRequest;
 import com.alibaba.water.domain.WaterScenarioParser;
+import com.alibaba.water.exception.WaterException;
 import com.alibaba.water.util.ClassScanUtils;
 import org.springframework.util.StringUtils;
+
+import java.lang.reflect.Method;
+import java.util.Set;
 
 /**
  * @author qingfei
@@ -72,7 +72,10 @@ public class WaterParser {
             WaterContext.setBizScenario(bizCode);
 
             Method parserSub = bizParserClass.getDeclaredMethod("parserSubScenario", WaterParamRequest.class);
-            String subScenario = (String)parserSub.invoke(obj, waterParamRequest);
+            String subScenario = null;
+            if (parserSub.invoke(obj, waterParamRequest) != null) {
+                subScenario = (String) parserSub.invoke(obj, waterParamRequest);
+            }
             WaterContext.setSubBizScenario(subScenario);
         } catch (Exception e) {
             throw new WaterException(e.getMessage());
