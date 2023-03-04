@@ -30,11 +30,12 @@ public class WaterTagImplRegisterInitializing implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
         Properties properties = PropertiesLoaderUtils.loadAllProperties("application.properties");
         String scanPath = (String) properties.get(WaterConstants.SCAN_PATH);
+        String customRouterScanPath = (String) properties.get(WaterConstants.CUSTOM_ROUTER_SCAN_PATH);
         WaterContext.setScanPath(scanPath);
         Set<Class<?>> baseClassSet = ClassScanUtils.getTypeAnnotation(scanPath, WaterBase.class);
         Set<Class<?>> interfaceClassSet = ClassScanUtils.getTypeAnnotation(scanPath, WaterInterface.class);
         Set<Class<?>> tagImplClassSet = ClassScanUtils.getTypeAnnotation(scanPath, WaterScenario.class);
-        Set<Class<?>> routeCustomClassSet = ClassScanUtils.getTypeAnnotation(scanPath, WaterRouter.class);
+        Set<Class<?>> routeCustomClassSet = ClassScanUtils.getTypeAnnotation(customRouterScanPath, WaterRouter.class);
         for (Class<?> interfaceClass : interfaceClassSet) {
             if (!interfaceClass.isInterface()) {
                 continue;
