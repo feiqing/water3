@@ -34,13 +34,13 @@ public class WaterParser {
     }
 
     public String parserBizCode(WaterParamRequest waterParamRequest) {
-        String path = WaterContext.getPath();
-        return parserBizCode(path, waterParamRequest);
+        String[] paths = WaterContext.getPath();
+        return parserBizCode(paths, waterParamRequest);
     }
 
-    public String parserBizCode(String packagePath, WaterParamRequest waterParamRequest) {
+    public String parserBizCode(String[] packagePaths, WaterParamRequest waterParamRequest) {
         // 扫描所有实现了WaterScenarioParser接口的类
-        Set<Class<?>> parserClassSet = ClassScanUtils.getSubTypeOf(packagePath, WaterScenarioParser.class);
+        Set<Class<?>> parserClassSet = ClassScanUtils.getSubTypeOf(packagePaths, WaterScenarioParser.class);
         String bizCode = null;
         // 优先级firstOf
         for (Class<?> bizParserClass : parserClassSet) {
