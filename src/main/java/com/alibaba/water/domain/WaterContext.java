@@ -10,8 +10,7 @@ public class WaterContext {
 
     private static ThreadLocal<String> subBizScenario = new ThreadLocal<>();
 
-
-    private static ThreadLocal<String> scanPath = new ThreadLocal<>();
+    private static ThreadLocal<String[]> scanPath = new ThreadLocal<>();
 
     public static String getBizScenario() {
         return bizScenario.get();
@@ -21,7 +20,7 @@ public class WaterContext {
         return subBizScenario.get();
     }
 
-    public static String getPath() {
+    public static String[] getPath() {
         return scanPath.get();
     }
 
@@ -37,15 +36,15 @@ public class WaterContext {
         WaterContext.bizScenario = bizScenario;
     }
 
-    public static ThreadLocal<String> getScanPath() {
+    public static ThreadLocal<String[]> getScanPath() {
         return scanPath;
     }
 
-    public static void setScanPath(String path) {
+    public static void setScanPath(String[] path) {
         scanPath.set(path);
     }
 
-    public static void setScanPath(ThreadLocal<String> scanPath) {
+    public static void setScanPath(ThreadLocal<String[]> scanPath) {
         WaterContext.scanPath = scanPath;
     }
 

@@ -13,7 +13,7 @@ import com.alibaba.water.domain.constant.WaterConstants;
 import com.alibaba.water.function.register.WaterBaseRegister;
 import com.alibaba.water.function.register.WaterTagRegister;
 import com.alibaba.water.util.ClassScanUtils;
-import com.alibaba.water.util.SpringBeanUtils;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.stereotype.Component;
@@ -29,12 +29,12 @@ public class WaterTagImplRegisterInitializing implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         Properties properties = PropertiesLoaderUtils.loadAllProperties("application.properties");
-        String scanPath = (String) properties.get(WaterConstants.SCAN_PATH);
-        WaterContext.setScanPath(scanPath);
-        Set<Class<?>> baseClassSet = ClassScanUtils.getTypeAnnotation(scanPath, WaterBase.class);
-        Set<Class<?>> interfaceClassSet = ClassScanUtils.getTypeAnnotation(scanPath, WaterInterface.class);
-        Set<Class<?>> tagImplClassSet = ClassScanUtils.getTypeAnnotation(scanPath, WaterScenario.class);
-        Set<Class<?>> routeCustomClassSet = ClassScanUtils.getTypeAnnotation(scanPath, WaterRouter.class);
+        String[] scanPaths = ((String) properties.get(WaterConstants.SCAN_PATH)).split(",");
+        WaterContext.setScanPath(scanPaths);
+        Set<Class<?>> baseClassSet = ClassScanUtils.getTypeAnnotation(scanPaths, WaterBase.class);
+        Set<Class<?>> interfaceClassSet = ClassScanUtils.getTypeAnnotation(scanPaths, WaterInterface.class);
+        Set<Class<?>> tagImplClassSet = ClassScanUtils.getTypeAnnotation(scanPaths, WaterScenario.class);
+        Set<Class<?>> routeCustomClassSet = ClassScanUtils.getTypeAnnotation(scanPaths, WaterRouter.class);
         for (Class<?> interfaceClass : interfaceClassSet) {
             if (!interfaceClass.isInterface()) {
                 continue;

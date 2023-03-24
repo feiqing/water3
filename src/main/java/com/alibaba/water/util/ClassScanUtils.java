@@ -18,32 +18,32 @@ public class ClassScanUtils {
     /**
      * 获取注解上的所有类（包含了该类的子类）
      *
-     * @param packagePath
+     * @param packagePaths
      * @param annClass
      * @return
      */
-    public static Set<Class<?>> getSubTypeAnnotation(String packagePath, Class<? extends Annotation> annClass) {
+    public static Set<Class<?>> getSubTypeAnnotation(String[] packagePaths, Class<? extends Annotation> annClass) {
         Reflections reflections = new Reflections(new ConfigurationBuilder()
-                .forPackages(packagePath)
+                .forPackages(packagePaths)
                 .addScanners(new TypeAnnotationsScanner()));
         return reflections.getTypesAnnotatedWith(annClass);
     }
 
-    public static Set<Class<?>> getTypeAnnotation(String packagePath, Class<? extends Annotation> annClass) {
-        Set<Class<?>> subTypeAnnotation = getSubTypeAnnotation(packagePath, annClass);
+    public static Set<Class<?>> getTypeAnnotation(String[] packagePaths, Class<? extends Annotation> annClass) {
+        Set<Class<?>> subTypeAnnotation = getSubTypeAnnotation(packagePaths, annClass);
         return subTypeAnnotation.stream().filter(clazz -> clazz.isAnnotationPresent(annClass)).collect(Collectors.toSet());
     }
 
     /**
      * 获取该类/接口的所有子类
      *
-     * @param packagePath
+     * @param packagePaths
      * @param superClass
      * @return
      */
-    public static Set<Class<?>> getSubTypeOf(String packagePath, Class superClass) {
+    public static Set<Class<?>> getSubTypeOf(String[] packagePaths, Class superClass) {
         Reflections reflections = new Reflections(new ConfigurationBuilder()
-                .forPackages(packagePath)
+                .forPackages(packagePaths)
                 .addScanners(new SubTypesScanner()));
         return reflections.getSubTypesOf(superClass);
     }
