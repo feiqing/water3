@@ -1,23 +1,19 @@
 package com.alibaba.water.function.manager;
 
-import java.beans.Introspector;
-import java.lang.invoke.SerializedLambda;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 
 import com.alibaba.water.annotation.WaterBase;
 import com.alibaba.water.annotation.WaterPriority;
+import com.alibaba.water.domain.WaterCall;
 import com.alibaba.water.domain.WaterCallBack;
 import com.alibaba.water.domain.WaterContext;
 import com.alibaba.water.domain.constant.WaterConstants;
 import com.alibaba.water.exception.WaterException;
-import com.alibaba.water.function.register.WaterTagRegister;
-import com.alibaba.water.util.SpringBeanUtils;
-import com.alibaba.water.domain.WaterCall;
 import com.alibaba.water.function.reducer.Matcher;
 import com.alibaba.water.function.register.WaterBaseRegister;
+import com.alibaba.water.function.register.WaterTagRegister;
+import com.alibaba.water.util.SpringBeanUtils;
 
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
@@ -89,26 +85,6 @@ public class ExtensionManager {
             }
         }
         return null;
-    }
-
-
-    private static String getMethod(Method routeMethod) {
-        return routeMethod.getName();
-//        String invokeMethod = null;
-//        try {
-//            routeMethod.getName();
-//            Method writeReplace = callBack.getClass().getDeclaredMethod("writeReplace");
-//            writeReplace.setAccessible(true);
-//            Object callBackObject = writeReplace.invoke(this);
-//            SerializedLambda serializedLambda = (SerializedLambda) callBackObject;
-//            String tempMethodName = serializedLambda.getImplMethodName();
-//            if (!tempMethodName.isEmpty() && tempMethodName.contains("lambda$")) {
-//                invokeMethod = tempMethodName.substring("lambda$".length(), tempMethodName.indexOf("$", "lambda$".length()));
-//            }
-//        } catch (Throwable e) {
-//            throw new RuntimeException(e);
-//        }
-//        return invokeMethod;
     }
 
     private static <T, I> T getImplResult(WaterCallBack<I, T> callBack, Class<?> implClass) {

@@ -10,7 +10,6 @@ public class WaterContext {
 
     private static ThreadLocal<String> subBizScenario = new ThreadLocal<>();
 
-
     private static ThreadLocal<String[]> scanPath = new ThreadLocal<>();
 
     public static String getBizScenario() {

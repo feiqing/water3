@@ -1,15 +1,10 @@
 package com.alibaba.water.executor;
 
-import javax.annotation.Resource;
-
 import com.alibaba.water.domain.WaterCall;
 import com.alibaba.water.domain.WaterCallBack;
 import com.alibaba.water.function.manager.ExtensionManager;
 import com.alibaba.water.function.reducer.Matcher;
 import com.alibaba.water.function.reducer.Reducer;
-
-import java.lang.reflect.Method;
-import java.util.function.Function;
 
 /**
  * @author qingfei
@@ -18,9 +13,6 @@ import java.util.function.Function;
 public class WaterExecutor {
 
     public static volatile WaterExecutor executor;
-
-    @Resource
-    private ExtensionManager extensionManager;
 
     private WaterExecutor() {}
 
@@ -48,7 +40,7 @@ public class WaterExecutor {
     }
 
     public <T, R, I> R execute(Class<I> extensionClass, WaterCallBack<I, T> callBack,String method, Matcher<T, R> matcher) {
-        return ExtensionManager.doExecute(extensionClass, callBack,method, matcher);
+        return ExtensionManager.doExecute(extensionClass, callBack, method, matcher);
     }
 
     public <T, R, I> Void executeVoidReturnType(Class<I> extensionClass, WaterCall<I> callBack) {
