@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<water3 xmlns="http://www.alibaba.com/idle/water3"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.alibaba.com/idle/water3
+       http://localhost/water/water3.xsd">
+
+    <ExtensionGroup name="CREATE" desc="下单">
+        <ExtensionAbility class="java.util.function.Function" base="baseFunction" desc="测试扩展能力1">
+            <ExtensionPoint method="apply" desc="apply方法">
+                <Business code="yhb, xxx" impl="bean" desc="验货宝">
+                    <bean name="com.alibaba.water3.demo.YhbFunction#0" lazy="true"/>
+                </Business>
+            </ExtensionPoint>
+        </ExtensionAbility>
+        <ExtensionAbility class="java.util.function.Supplier" base="baseSupplier" desc="测试扩展能力2">
+            <ExtensionPoint method="get" desc="get方法">
+                <Business code="yhb" impl="hsf" desc="验货宝">
+                    <hsf service="xxx" group="xxx" version="xxx" lazy="true"/>
+                </Business>
+                <Business code="yhb2" impl="bean" desc="验货宝">
+                    <bean name="com.alibaba.water3.demo.YhbSupplier#0"/>
+                </Business>
+            </ExtensionPoint>
+        </ExtensionAbility>
+
+    </ExtensionGroup>
+
+    <ExtensionGroup gropu="xxx">
+
+    </ExtensionGroup>
+
+
+</water3>

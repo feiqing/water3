@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<water xmlns="http://www.taobao.com/idle/water"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.taobao.com/idle/water
+       http://localhost/water/water.xsd">
+
+    <ExtensionGroup name="ORDER_CREATE" desc="下单">
+        <ExtensionAbility class="com.alibaba.idletradematrix.model.manager.create.extension.TransferParamsBuildExt" base="baseTransferParamsBuildExt" desc="下单参数构建">
+            <ExtensionPoint method="isSupportPP3" desc="是否支持pp3">
+                <Business code="hs, bm" impl="bean" desc="回收, 帮卖实现">
+                    <bean name="hsTradeBean"/>
+                </Business>
+                <Business code="yhb" impl="hsf" desc="验货宝">
+                    <hsf service="com.alibaba.idle.tradeinteract.api.biz.vendue.IdleVendueBizCheckService" group="HSF" version="1.0.0.yhb" timeout="100" lazy="true" />
+                </Business>
+            </ExtensionPoint>
+            <ExtensionPoint method="buildTransformParams">
+                <Business code="xxx" impl="hsf" priority="0">
+                    <hsf service="xxx" group="xxx" version="xxx(目前先暂定使用version来进行路由)"/>
+                </Business>
+                <Business code="xxx" impl="bean" desc="">
+                    <bean name="xxxx"/>
+                </Business>
+                <Business code="sss" impl="hsf">
+                    <hsf service="sss" group="ss" version="ss"/>
+                </Business>
+                <Business code="sss" impl="hsf">
+                    <hsf service="xxxx" group="sss" version="sss"/>
+                </Business>
+            </ExtensionPoint>
+        </ExtensionAbility>
+
+        <ExtensionAbility class="com.alibaba.idletradematrix.model.manager.create.extension.TransferParamsBuildExt2" base="baseTransferParamsBuildExt" desc="下单参数构建">
+            <ExtensionPoint method="isSupportPP3" desc="是否支持pp3">
+                <Business code="hs, bm" impl="bean" desc="回收, 帮卖实现">
+                    <bean name="hsTradeBean"/>
+                </Business>
+                <Business code="yhb" impl="hsf" desc="验货宝">
+                    <hsf service="com.alibaba.idle.tradeinteract.api.biz.vendue.IdleVendueBizCheckService" group="HSF" version="1.0.0.yhb" />
+                </Business>
+            </ExtensionPoint>
+            <ExtensionPoint method="buildTransformParams">
+                <Business code="xxx" impl="hsf">
+                    <hsf service="xxx" group="xxx" version="xxx(目前先暂定使用version来进行路由)"/>
+                </Business>
+            </ExtensionPoint>
+        </ExtensionAbility>
+    </ExtensionGroup>
+
+    <ExtensionGroup name="XXXX">
+        <ExtensionAbility class="xxx" base="xxxx">
+            <ExtensionPoint method="xxxx"></ExtensionPoint>
+        </ExtensionAbility>
+    </ExtensionGroup>
+
+
+</water>
