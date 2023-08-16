@@ -6,6 +6,8 @@ package com.alibaba.water3.exception;
  */
 public class WaterException extends RuntimeException {
 
+    private static final long serialVersionUID = -2060948238287068976L;
+
     public WaterException() {
     }
 
