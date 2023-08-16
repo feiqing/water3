@@ -50,13 +50,13 @@ public class DomLoader {
     }
 
     private static Tag.BusinessScenario loadingBusinessScenario(String file, Element document) {
-        String name = getAttrValNoneNull(document, file, "", "<BusinessScenario/>", "name");
+        String _scenario = getAttrValNoneNull(document, file, "", "<water3/>", "scenario");
 
-        Tag.BusinessScenario scenario = new Tag.BusinessScenario(name);
+        Tag.BusinessScenario scenario = new Tag.BusinessScenario(_scenario);
         scenario.desc = document.attributeValue("desc");
         scenario.extensionAbilityList = new LinkedList<>();
         for (Iterator<Element> iterator = document.elementIterator(); iterator.hasNext(); ) {
-            scenario.extensionAbilityList.add(loadingExtensionAbility(file, name, iterator.next()));
+            scenario.extensionAbilityList.add(loadingExtensionAbility(file, _scenario, iterator.next()));
         }
 
         return scenario;
