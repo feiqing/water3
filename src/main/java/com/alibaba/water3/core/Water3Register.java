@@ -1,6 +1,6 @@
 package com.alibaba.water3.core;
 
-import com.alibaba.water3.Water3Context;
+import com.alibaba.water3.WaterContext;
 import com.alibaba.water3.domain.Entity;
 import com.alibaba.water3.domain.Tag;
 import com.alibaba.water3.exception.WaterException;
@@ -28,21 +28,23 @@ public class Water3Register {
 
     private static final String WATER_XML_CONFIG_LOCATION = "classpath*:water3*.xml";
 
-    // group -> ability(class) -> point(method) -> business -> impl
-    private static final ConcurrentMap<String, Entity.ExtensionGroup> name2groupMap = new ConcurrentHashMap<>();
+    // scenario -> ability(class) -> point(method) -> business -> impl
+    private static final ConcurrentMap<String, Entity.ExtensionGroup> scenarioMap = new ConcurrentHashMap<>();
 
-    public static <SPI> List<SPI> getSpiImpls(Class<SPI> extensionAbility, String extensionPointMethod) {
-        String groupName = Water3Context.getGroupName();
-        // todo @翡青 异常信息
-        Preconditions.checkState(!Strings.isNullOrEmpty(groupName));
+    public static <SPI> List<SPI> getSpiImpls(Class<SPI> extensionAbility, String extensionPoint) {
+        String scenario = WaterContext.getBizScenario();
+        if (Strings.isNullOrEmpty(scenario)) {
+            throw new WaterException("BizScenario must be set.");
+        }
 
-        String bizCode = Water3Context.getBizCode();
-        // todo @翡青 异常信息
-        Preconditions.checkState(!Strings.isNullOrEmpty(bizCode));
+        String id = WaterContext.getBizId();
+        if (Strings.isNullOrEmpty(id)) {
+            throw new WaterException("BizId must be set.");
+        }
 
-        Entity.ExtensionGroup group = name2groupMap.get(groupName);
+        Entity.ExtensionGroup group = scenarioMap.get(scenario);
         if (group == null) {
-            throw new WaterException(String.format("ExtensionGroup:[%s] not found.", groupName));
+            throw new WaterException(String.format("BusinessScenario:[%s] not found.", scenario));
         }
 
         Entity.ExtensionAbility ability = group.class2abilityMap.get(extensionAbility);
@@ -50,13 +52,13 @@ public class Water3Register {
             throw new WaterException(String.format("ExtensionAbility:[%s#%s] not found.", group.name, extensionAbility.getName()));
         }
 
-        Entity.ExtensionPoint point = ability.method2pointMap.get(extensionPointMethod);
+        Entity.ExtensionPoint point = ability.method2pointMap.get(extensionPoint);
         if (point == null) {
-            throw new WaterException(String.format("ExtensionPoint:[%s#%s#%s] not found.", group.name, ability.clazz, extensionPointMethod));
+            throw new WaterException(String.format("ExtensionPoint:[%s#%s#%s] not found.", group.name, ability.clazz, extensionPoint));
         }
 
-        return (List<SPI>) point.code2implCache.computeIfAbsent(bizCode, _K -> {
-            List<Entity.Business> business = point.code2businessMap.get(bizCode);
+        return (List<SPI>) point.code2implCache.computeIfAbsent(id, _K -> {
+            List<Entity.Business> business = point.code2businessMap.get(id);
             if (CollectionUtils.isEmpty(business)) {
                 return Collections.singletonList(ability.baseImpl);
             } else {
@@ -71,25 +73,15 @@ public class Water3Register {
         }
 
         // tips: 懒加载的具体实现
-        if (entity.hsf != null) {
-            if (!entity.hsf.lazy) {
-                // todo: 不是懒加载, 肯定有问题
-                throw new WaterException("不是懒加载");
-            }
-
-            try {
+        try {
+            if (entity.hsf != null) {
                 entity.impl = HsfServiceFactory.getHsfService(entity.hsf);
-            } catch (Exception e) {
-                throw new WaterException(e);
             }
-        }
-        if (entity.bean != null) {
-            if (!entity.bean.lazy) {
-                // todo: 不是懒加载, 肯定有问题
-                throw new WaterException("不是懒加载");
+            if (entity.bean != null) {
+                entity.impl = SpringBeanFactory.getSpringBean(entity.bean);
             }
-
-            entity.impl = SpringBeanFactory.getSpringBean(entity.bean);
+        } catch (Exception e) {
+            throw new WaterException(e);
         }
 
         Preconditions.checkState(entity.impl != null);
@@ -109,7 +101,7 @@ public class Water3Register {
         for (Tag.ExtensionGroup extensionGroup : extensionGroups) {
             String group = extensionGroup.name;
             Entity.ExtensionGroup entity = new Entity.ExtensionGroup(group, registerClass2abilityMap(extensionGroup.extensionAbilityList));
-            name2groupMap.put(group, entity);
+            scenarioMap.put(group, entity);
         }
     }
 
@@ -169,8 +161,7 @@ public class Water3Register {
             return Entity.Business.newHsfInstance(code, tag.hsf, getHsfService(tag.hsf));
         }
 
-        // todo: 应该抛出异常, 因为前面已经来解析的时候做了拦截&校验了
-        return null;
+        throw new WaterException(String.format("BusinessExt:[%s] <bean/> and <hsf/> definition all empty.", code));
     }
 
     private static Object getSpringBean(Tag.Bean bean) {

@@ -1,6 +1,6 @@
 package com.alibaba.water3.proxy.jdk;
 
-import com.alibaba.water3.core.Water3Executor;
+import com.alibaba.water3.core.WaterExecutor;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -28,7 +28,7 @@ public class JdkProxyFactory {
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            return Water3Executor.doExecute(extensionAbility, method, args);
+            return WaterExecutor.doExecute(extensionAbility, method, args);
         }
     }
 }

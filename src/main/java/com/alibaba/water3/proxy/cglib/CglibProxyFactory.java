@@ -1,6 +1,6 @@
 package com.alibaba.water3.proxy.cglib;
 
-import com.alibaba.water3.core.Water3Executor;
+import com.alibaba.water3.core.WaterExecutor;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
@@ -32,7 +32,7 @@ public class CglibProxyFactory {
 
         @Override
         public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
-            return Water3Executor.doExecute(extensionAbility, method, objects);
+            return WaterExecutor.doExecute(extensionAbility, method, objects);
         }
     }
 }

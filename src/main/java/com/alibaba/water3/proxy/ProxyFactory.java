@@ -17,10 +17,10 @@ public class ProxyFactory {
 
     private static volatile String type = null;
 
-    private static final ConcurrentMap<Class<?>, Object> spiProxies = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<Class<?>, Object> proxies = new ConcurrentHashMap<>();
 
     public static <SPI> SPI getProxy(Class<SPI> extensionAbility) {
-        return (SPI) spiProxies.computeIfAbsent(extensionAbility, ProxyFactory::newProxy);
+        return (SPI) proxies.computeIfAbsent(extensionAbility, ProxyFactory::newProxy);
     }
 
     private static <SPI> Object newProxy(Class<SPI> extensionAbility) {

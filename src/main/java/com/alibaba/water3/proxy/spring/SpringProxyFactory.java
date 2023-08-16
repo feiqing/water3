@@ -1,6 +1,6 @@
 package com.alibaba.water3.proxy.spring;
 
-import com.alibaba.water3.core.Water3Executor;
+import com.alibaba.water3.core.WaterExecutor;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
@@ -33,7 +33,7 @@ public class SpringProxyFactory {
 
         @Override
         public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
-            return Water3Executor.doExecute(extensionAbility, method, objects);
+            return WaterExecutor.doExecute(extensionAbility, method, objects);
         }
     }
 }
