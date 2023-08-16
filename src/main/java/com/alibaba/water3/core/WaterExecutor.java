@@ -76,7 +76,6 @@ public class WaterExecutor {
     }
 
     private static <SPI> Object invoke(Class<SPI> extensionAbility, Object target, Method method, Object[] args) throws Exception {
-        PluginInvocation invocation = new PluginInvocation(extensionAbility, method, target, args, plugins);
-        return invocation.processed();
+        return new PluginInvocation(extensionAbility, method, target, args, plugins).processed();
     }
 }

@@ -91,7 +91,7 @@ public class WaterManger {
 
 
     public static void register(String configStyle) throws Exception {
-        List<Tag.ExtensionGroup> extensionGroups = Collections.emptyList();
+        Collection<Tag.ExtensionGroup> extensionGroups = Collections.emptyList();
         if (StringUtils.equalsIgnoreCase(configStyle, "XML")) {
             extensionGroups = DomParser.loadExtensionGroups(WATER_XML_CONFIG_LOCATION);
         } else {

@@ -12,14 +12,12 @@ import java.lang.reflect.Method;
  */
 public class PluginInvocation {
 
-    private int idx = -1;
-
     @Getter
-    private final Class<?> extensionAbility;
+    private final Class<?> extensionAbilityClass;
 
     @Getter
     @Setter
-    private Method method;
+    private Method extensionPointMethod;
 
     @Getter
     @Setter
@@ -31,19 +29,21 @@ public class PluginInvocation {
 
     private final WaterPlugin[] plugins;
 
-    public PluginInvocation(Class<?> extensionAbility, Method method, Object target, Object[] args, WaterPlugin[] plugins) {
-        this.extensionAbility = extensionAbility;
-        this.method = method;
+    public PluginInvocation(Class<?> extensionAbilityClass, Method extensionPointMethod, Object target, Object[] args, WaterPlugin[] plugins) {
+        this.extensionAbilityClass = extensionAbilityClass;
+        this.extensionPointMethod = extensionPointMethod;
         this.target = target;
         this.args = args;
         this.plugins = plugins;
     }
 
+    private int idx = -1;
+
     public Object processed() throws Exception {
         if (++idx < plugins.length) {
             return plugins[idx].invoke(this);
         } else {
-            return method.invoke(target, args);
+            return extensionPointMethod.invoke(target, args);
         }
     }
 }

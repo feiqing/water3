@@ -33,6 +33,7 @@ public class DomParser {
 
         for (Resource resource : resources) {
             String filename = resource.getFilename();
+            // todo 删除ExtensionGroup
             Document document = reader.read(resource.getInputStream());
 
             for (Iterator<Element> iterator = document.getRootElement().elementIterator(); iterator.hasNext(); ) {

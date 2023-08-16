@@ -19,7 +19,7 @@ public class WaterLoggingPlugin implements WaterPlugin {
             return invocation.processed();
         } finally {
             long ts = System.currentTimeMillis() - start;
-            log.info("[{}:{}] invoke ts:{}", invocation.getExtensionAbility().getName(), invocation.getMethod().getName(), ts);
+            log.info("[{}:{}] invoke ts:{}", invocation.getExtensionAbilityClass().getName(), invocation.getExtensionPointMethod().getName(), ts);
         }
     }
 }
