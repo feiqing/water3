@@ -1,9 +1,8 @@
 package com.alibaba.water3.domain;
 
-import lombok.Data;
-
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author jifang.zjf@alibaba-inc.com (FeiQing)
@@ -12,23 +11,34 @@ import java.util.List;
  */
 public class Tag {
 
-    @Data
-    public static class ExtensionGroup implements Serializable {
+    public static class BusinessScenario implements Serializable {
 
         private static final long serialVersionUID = -8226078980396592923L;
 
-        public String name;
+        public String scenario;
 
         public String desc;
 
         public List<ExtensionAbility> extensionAbilityList;
 
-        public ExtensionGroup(String name) {
-            this.name = name;
+        public BusinessScenario(String scenario) {
+            this.scenario = scenario;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            BusinessScenario that = (BusinessScenario) o;
+            return Objects.equals(scenario, that.scenario);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(scenario);
         }
     }
 
-    @Data
     public static class ExtensionAbility implements Serializable {
 
         private static final long serialVersionUID = 6557095413659207121L;
@@ -47,7 +57,6 @@ public class Tag {
         }
     }
 
-    @Data
     public static class ExtensionPoint implements Serializable {
 
         private static final long serialVersionUID = 8266020009404590458L;
@@ -67,12 +76,11 @@ public class Tag {
         }
     }
 
-    @Data
     public static class Business implements Serializable {
 
         private static final long serialVersionUID = -253145366338161711L;
 
-        public String code;
+        public String id;
 
         public String impl;
 
@@ -82,15 +90,14 @@ public class Tag {
 
         public Hsf hsf;
 
-        public long priority = Long.MAX_VALUE;
+        public long priority = 0L;
 
-        public Business(String code, String impl) {
-            this.code = code;
+        public Business(String id, String impl) {
+            this.id = id;
             this.impl = impl;
         }
     }
 
-    @Data
     public static class Bean implements Serializable {
 
         private static final long serialVersionUID = -1946088618528756952L;
@@ -104,7 +111,6 @@ public class Tag {
         }
     }
 
-    @Data
     public static class Hsf implements Serializable {
 
         private static final long serialVersionUID = -6757315625134300013L;

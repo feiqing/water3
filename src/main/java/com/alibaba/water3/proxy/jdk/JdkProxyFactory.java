@@ -28,7 +28,7 @@ public class JdkProxyFactory {
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            return WaterExecutor.doExecute(extensionAbility, method, args);
+            return WaterExecutor.proxyExecute(extensionAbility, method, args);
         }
     }
 }

@@ -21,7 +21,7 @@ public class HsfServiceFactory {
     public static Object getHsfService(Tag.Hsf hsf) throws Exception {
         // tips: 在这里就不管它是否为lazy了, 一定要加载了
 
-        String serviceKey = String.format("%s#%s#%s#%s", hsf.getService(), hsf.getGroup(), hsf.getVersion(), hsf.getTimeout());
+        String serviceKey = String.format("%s#%s#%s#%s", hsf.service, hsf.group, hsf.version, hsf.timeout);
         Object serviceObj = serviceMap.get(serviceKey);
         if (serviceObj != null) {
             return serviceObj;

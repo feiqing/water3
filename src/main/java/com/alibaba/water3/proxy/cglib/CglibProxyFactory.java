@@ -32,7 +32,7 @@ public class CglibProxyFactory {
 
         @Override
         public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
-            return WaterExecutor.doExecute(extensionAbility, method, objects);
+            return WaterExecutor.proxyExecute(extensionAbility, method, objects);
         }
     }
 }

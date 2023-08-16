@@ -13,16 +13,16 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class Entity {
 
-    public static class ExtensionGroup {
+    public static class BusinessScenario {
 
         @Nonnull
-        public final String name;
+        public final String scenario;
 
         @Nonnull
         public final ConcurrentMap<Class<?>, ExtensionAbility> class2abilityMap;
 
-        public ExtensionGroup(@Nonnull String name, @Nonnull ConcurrentMap<Class<?>, ExtensionAbility> class2abilityMap) {
-            this.name = name;
+        public BusinessScenario(@Nonnull String scenario, @Nonnull ConcurrentMap<Class<?>, ExtensionAbility> class2abilityMap) {
+            this.scenario = scenario;
             this.class2abilityMap = class2abilityMap;
         }
     }
@@ -52,21 +52,21 @@ public class Entity {
         public final String method;
 
         @Nonnull
-        public final ConcurrentMap<String, List<Business>> code2businessMap;
+        public final ConcurrentMap<String, List<Business>> id2businessMap;
 
         @Nonnull
-        public final ConcurrentMap<String, List<Object>> code2implCache = new ConcurrentHashMap<>();
+        public final ConcurrentMap<String, List<Object>> id2implCache = new ConcurrentHashMap<>();
 
-        public ExtensionPoint(@Nonnull String method, @Nonnull ConcurrentMap<String, List<Business>> code2businessMap) {
+        public ExtensionPoint(@Nonnull String method, @Nonnull ConcurrentMap<String, List<Business>> id2businessMap) {
             this.method = method;
-            this.code2businessMap = code2businessMap;
+            this.id2businessMap = id2businessMap;
         }
     }
 
     public static class Business {
 
         @Nonnull
-        public final String code;
+        public final String id;
 
         @Nullable
         public Tag.Hsf hsf = null;
@@ -77,8 +77,8 @@ public class Entity {
         @Nullable
         public volatile Object impl = null;
 
-        private Business(@Nonnull String code) {
-            this.code = code;
+        private Business(@Nonnull String id) {
+            this.id = id;
         }
 
         public static Business newHsfInstance(@Nonnull String code, @Nonnull Tag.Hsf hsf, @Nullable Object impl) {

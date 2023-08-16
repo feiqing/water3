@@ -15,7 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ServiceLoader;
 
-import static com.alibaba.water3.core.WaterManger.getSpiImpls;
+import static com.alibaba.water3.core.WaterRegister.getSpiImpls;
 
 /**
  * @author jifang.zjf@alibaba-inc.com (FeiQing)
@@ -34,8 +34,8 @@ public class WaterExecutor {
         ServiceLoader<WaterPlugin> loader = ServiceLoader.load(WaterPlugin.class, WaterPlugin.class.getClassLoader());
         List<WaterPlugin> _plugins = new LinkedList<>();
         for (WaterPlugin plugin : loader) {
-            log.info("loaded [WaterPlugin]: {}", plugin);
             _plugins.add(plugin);
+            log.info("loading [WaterPlugin]: {}", plugin);
         }
         plugins = _plugins.toArray(new WaterPlugin[0]);
     }
@@ -54,13 +54,23 @@ public class WaterExecutor {
         }
     }
 
-    public static <SPI> Object doExecute(Class<SPI> extensionAbility, Method method, Object[] args) throws Throwable {
+    /**
+     * Proxy的回调
+     *
+     * @param extensionAbility
+     * @param method
+     * @param args
+     * @param <SPI>
+     * @return
+     * @throws Throwable
+     */
+    public static <SPI> Object proxyExecute(Class<SPI> extensionAbility, Method method, Object[] args) throws Throwable {
         Reducer reducer = reducerCtx.get();
-        List<SPI> impls = getSpiImpls(extensionAbility, method.getName());
+        List<SPI> spiImpls = getSpiImpls(extensionAbility, method.getName());
 
-        List<Object> rs = new ArrayList<>(impls.size());
-        for (SPI impl : impls) {
-            Object r = invoke(extensionAbility, impl, method, args);
+        List<Object> rs = new ArrayList<>(spiImpls.size());
+        for (SPI spiImpl : spiImpls) {
+            Object r = invoke(extensionAbility, spiImpl, method, args);
             rs.add(r);
             if (reducer.willBreak(r)) {
                 break;

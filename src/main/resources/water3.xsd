@@ -6,30 +6,18 @@
 
     <xsd:element name="water3">
         <xsd:annotation>
-            <xsd:documentation>全局water3定义(XML root)</xsd:documentation>
-        </xsd:annotation>
-        <xsd:complexType>
-            <xsd:sequence>
-                <xsd:element ref="ExtensionGroup" minOccurs="0" maxOccurs="unbounded"/>
-            </xsd:sequence>
-        </xsd:complexType>
-    </xsd:element>
-
-    <xsd:element name="ExtensionGroup">
-        <xsd:annotation>
             <xsd:documentation>扩展场景配置, 如:订单渲染、订单创建、订单详情、消息头等</xsd:documentation>
         </xsd:annotation>
         <xsd:complexType>
             <xsd:sequence>
                 <xsd:element ref="ExtensionAbility" minOccurs="1" maxOccurs="unbounded"/>
             </xsd:sequence>
-            <xsd:attributeGroup ref="extensionGroupAttrs"/>
-
+            <xsd:attributeGroup ref="water3Attrs"/>
         </xsd:complexType>
     </xsd:element>
 
-    <xsd:attributeGroup name="extensionGroupAttrs">
-        <xsd:attribute name="name" type="xsd:string" use="required">
+    <xsd:attributeGroup name="water3Attrs">
+        <xsd:attribute name="scenario" type="xsd:string" use="required">
             <xsd:annotation>
                 <xsd:documentation>场景定义, 如:ORDER_RENDER、ORDER_CREATE、ORDER_DETAIL、MESSAGE_HEAD</xsd:documentation>
             </xsd:annotation>
@@ -126,7 +114,7 @@
     </xsd:element>
 
     <xsd:attributeGroup name="businessAttrs">
-        <xsd:attribute name="code" type="xsd:string" use="required">
+        <xsd:attribute name="id" type="xsd:string" use="required">
             <xsd:annotation>
                 <xsd:documentation>业务身份定义, 目前支持','分割支持多重业务身份</xsd:documentation>
             </xsd:annotation>
@@ -137,7 +125,7 @@
                 </xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>
-        <xsd:attribute name="priority" type="xsd:long" default="Long.MAX_VALUE">
+        <xsd:attribute name="priority" type="xsd:long" default="0">
             <xsd:annotation>
                 <xsd:documentation>相同业务身份的不同实现的排序规则(调用顺序): 越小越靠前</xsd:documentation>
             </xsd:annotation>
