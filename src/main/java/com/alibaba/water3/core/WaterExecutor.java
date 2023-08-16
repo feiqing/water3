@@ -6,6 +6,7 @@ import com.alibaba.water3.plugin.PluginInvocation;
 import com.alibaba.water3.plugin.WaterPlugin;
 import com.alibaba.water3.proxy.ProxyFactory;
 import com.alibaba.water3.reducer.Reducer;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Method;
@@ -21,6 +22,7 @@ import static com.alibaba.water3.core.WaterManger.getSpiImpls;
  * @version 1.0
  * @since 2023/8/11 17:47.
  */
+@Slf4j
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class WaterExecutor {
 
@@ -32,6 +34,7 @@ public class WaterExecutor {
         ServiceLoader<WaterPlugin> loader = ServiceLoader.load(WaterPlugin.class, WaterPlugin.class.getClassLoader());
         List<WaterPlugin> _plugins = new LinkedList<>();
         for (WaterPlugin plugin : loader) {
+            log.info("loaded [WaterPlugin]: {}", plugin);
             _plugins.add(plugin);
         }
         plugins = _plugins.toArray(new WaterPlugin[0]);
