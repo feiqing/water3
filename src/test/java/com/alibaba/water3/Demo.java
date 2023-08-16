@@ -23,12 +23,13 @@ public class Demo {
 
     public static void main(String[] args) throws Exception {
         WaterStaticStarter.start("classpath:spring-*.xml");
-        Water3.parseBizId(DemoWaterParser.class, new String[]{"string"});
 
+        Water3.parseBizId(DemoWaterParser.class, new String[]{"base"});
         Object r = Water3.execute(Function.class, function -> function.apply("haha"));
-        WaterContext.setBizId("yhb");
         System.out.println(r);
-        r = Water3.execute(Supplier.class, function -> function.get());
+
+        Water3.parseBizId(DemoWaterParser.class, new String[]{"yhb"});
+        r = Water3.execute(Supplier.class, Supplier::get);
         System.out.println(r);
     }
 }
