@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * @version 1.0
  * @since 2023/8/11 17:52.
  */
-public class Water3Register {
+public class WaterManger {
 
     private static final String WATER_XML_CONFIG_LOCATION = "classpath*:water3*.xml";
 
@@ -62,7 +62,7 @@ public class Water3Register {
             if (CollectionUtils.isEmpty(business)) {
                 return Collections.singletonList(ability.baseImpl);
             } else {
-                return business.stream().map(Water3Register::makeImpl).collect(Collectors.toList());
+                return business.stream().map(WaterManger::makeImpl).collect(Collectors.toList());
             }
         });
     }

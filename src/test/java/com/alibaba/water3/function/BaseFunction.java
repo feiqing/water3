@@ -1,4 +1,4 @@
-package com.alibaba.water3.demo;
+package com.alibaba.water3.function;
 
 import java.util.function.Function;
 

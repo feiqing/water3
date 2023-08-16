@@ -4,11 +4,11 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="baseFunction" class="com.alibaba.water3.demo.BaseFunction"/>
+    <bean id="baseFunction" class="com.alibaba.water3.function.BaseFunction"/>
 
-    <bean id="baseSupplier" class="com.alibaba.water3.demo.BaseSupplier"/>
+    <bean id="baseSupplier" class="com.alibaba.water3.function.BaseSupplier"/>
 
-    <bean class="com.alibaba.water3.demo.YhbFunction"/>
+    <bean class="com.alibaba.water3.function.YhbFunction"/>
 
-    <bean class="com.alibaba.water3.demo.YhbSupplier"/>
+    <bean class="com.alibaba.water3.function.YhbSupplier"/>
 </beans>

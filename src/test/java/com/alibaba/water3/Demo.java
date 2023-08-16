@@ -1,7 +1,7 @@
 package com.alibaba.water3;
 
 import com.alibaba.water3.annotation.BizScenario;
-import com.alibaba.water3.starter.StaticWater3Starter;
+import com.alibaba.water3.starter.WaterStaticStarter;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -22,7 +22,7 @@ public class Demo {
     }
 
     public static void main(String[] args) throws Exception {
-        StaticWater3Starter.start("classpath:spring-*.xml");
+        WaterStaticStarter.start("classpath:spring-*.xml");
         Water3.parseBizId(DemoWaterParser.class, new String[]{"string"});
 
         Object r = Water3.execute(Function.class, function -> function.apply("haha"));

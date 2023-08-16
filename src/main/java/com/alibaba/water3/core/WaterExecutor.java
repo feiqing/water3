@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ServiceLoader;
 
-import static com.alibaba.water3.core.Water3Register.getSpiImpls;
+import static com.alibaba.water3.core.WaterManger.getSpiImpls;
 
 /**
  * @author jifang.zjf@alibaba-inc.com (FeiQing)

@@ -1,6 +1,6 @@
 package com.alibaba.water3.starter;
 
-import com.alibaba.water3.core.Water3Register;
+import com.alibaba.water3.core.WaterManger;
 import com.alibaba.water3.factory.SpringBeanFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -14,11 +14,11 @@ import org.springframework.stereotype.Component;
  * @since 2023/8/11 23:13.
  */
 @Component
-public class SpringWater3Stater implements InitializingBean, ApplicationContextAware {
+public class WaterSpringStater implements InitializingBean, ApplicationContextAware {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        Water3Register.register("XML");
+        WaterManger.register("XML");
     }
 
     @Override

@@ -8,7 +8,7 @@
         <ExtensionAbility class="java.util.function.Function" base="baseFunction" desc="测试扩展能力1">
             <ExtensionPoint method="apply" desc="apply方法">
                 <Business code="yhb, xxx" impl="bean" desc="验货宝">
-                    <bean name="com.alibaba.water3.demo.YhbFunction#0" lazy="true"/>
+                    <bean name="com.alibaba.water3.function.YhbFunction#0" lazy="true"/>
                 </Business>
             </ExtensionPoint>
         </ExtensionAbility>
@@ -18,7 +18,7 @@
                     <hsf service="xxx" group="xxx" version="xxx.yhb" lazy="true"/>
                 </Business>
                 <Business code="yhb2" impl="bean" desc="验货宝">
-                    <bean name="com.alibaba.water3.demo.YhbSupplier#0"/>
+                    <bean name="com.alibaba.water3.function.YhbSupplier#0"/>
                 </Business>
             </ExtensionPoint>
         </ExtensionAbility>

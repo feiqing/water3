@@ -1,4 +1,4 @@
-package com.alibaba.water3.demo;
+package com.alibaba.water3.function;
 
 /**
  * @author jifang.zjf@alibaba-inc.com (FeiQing)
