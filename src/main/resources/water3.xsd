@@ -4,7 +4,7 @@
             targetNamespace="http://www.alibaba.com/idle/water3"
             elementFormDefault="qualified">
 
-    <xsd:element name="water3">
+    <xsd:element name="BusinessScenario">
         <xsd:annotation>
             <xsd:documentation>扩展场景配置, 如:订单渲染、订单创建、订单详情、消息头等</xsd:documentation>
         </xsd:annotation>
@@ -12,11 +12,11 @@
             <xsd:sequence>
                 <xsd:element ref="ExtensionAbility" minOccurs="1" maxOccurs="unbounded"/>
             </xsd:sequence>
-            <xsd:attributeGroup ref="water3Attrs"/>
+            <xsd:attributeGroup ref="businessScenarioAttrs"/>
         </xsd:complexType>
     </xsd:element>
 
-    <xsd:attributeGroup name="water3Attrs">
+    <xsd:attributeGroup name="businessScenarioAttrs">
         <xsd:attribute name="scenario" type="xsd:string" use="required">
             <xsd:annotation>
                 <xsd:documentation>场景定义, 如:ORDER_RENDER、ORDER_CREATE、ORDER_DETAIL、MESSAGE_HEAD</xsd:documentation>

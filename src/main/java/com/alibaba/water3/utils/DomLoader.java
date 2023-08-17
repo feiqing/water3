@@ -1,4 +1,4 @@
-package com.alibaba.water3.util;
+package com.alibaba.water3.utils;
 
 import com.alibaba.water3.domain.Tag;
 import com.alibaba.water3.exception.WaterException;
@@ -42,8 +42,12 @@ public class DomLoader {
                 throw new WaterException(String.format("BusinessScenario[%s] duplicated in file:[%s]", scenario.scenario, filename));
             }
 
-            log.info("loaded BusinessScenario:[{}][{}][{}] in file:[{}].", scenario, scenario.extensionAbilityList.size(),
-                    scenario.extensionAbilityList.stream().mapToInt(ability -> ability.extensionPointList.size()).sum(), filename);
+            log.info("loaded BusinessScenario:[{}][{}][{}] in file:[{}].",
+                    scenario.scenario,
+                    scenario.extensionAbilityList.size(),
+                    scenario.extensionAbilityList.stream().mapToInt(ability -> ability.extensionPointList.size()).sum(),
+                    filename
+            );
         }
 
         return scenarios;

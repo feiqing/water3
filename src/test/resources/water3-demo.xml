@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<water3 xmlns="http://www.alibaba.com/idle/water3"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.alibaba.com/idle/water3  http://localhost/water/water3.xsd"
-        scenario="ORDER_CREATE" desc="下单">
+<BusinessScenario xmlns="http://www.alibaba.com/idle/water3"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://www.alibaba.com/idle/water3  http://www.alibaba.com/water/water3.xsd"
+                  scenario="ORDER_CREATE" desc="下单">
 
     <ExtensionAbility class="java.util.function.Function" base="baseFunction" desc="测试扩展能力1">
         <ExtensionPoint method="apply" desc="apply方法">
@@ -24,4 +24,4 @@
     </ExtensionAbility>
 
 
-</water3>
+</BusinessScenario>

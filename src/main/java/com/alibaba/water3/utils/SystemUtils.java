@@ -1,4 +1,4 @@
-package com.alibaba.water3.util;
+package com.alibaba.water3.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -14,7 +14,7 @@ public class SystemUtils {
         if (StringUtils.equalsIgnoreCase(System.getProperty("spring.profiles.active"), "production")) {
             return true;
         }
-        if (StringUtils.equalsIgnoreCase(System.getProperty("water3.close.lazy.loading"), "true")) {
+        if (StringUtils.equalsIgnoreCase(System.getProperty("water3.turnoff.lazy.loading"), "true")) {
             return true;
         }
 
@@ -25,7 +25,7 @@ public class SystemUtils {
         if (StringUtils.equalsIgnoreCase(System.getProperty("spring.profiles.active"), "production")) {
             return false;
         }
-        if (StringUtils.equalsIgnoreCase(System.getProperty("water3.open.lazy.loading"), "true")) {
+        if (StringUtils.equalsIgnoreCase(System.getProperty("water3.turnon.lazy.loading"), "true")) {
             return true;
         }
 

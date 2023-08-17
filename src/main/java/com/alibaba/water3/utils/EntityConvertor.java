@@ -1,4 +1,4 @@
-package com.alibaba.water3.util;
+package com.alibaba.water3.utils;
 
 import com.alibaba.water3.domain.Entity;
 import com.alibaba.water3.domain.Tag;

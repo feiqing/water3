@@ -10,5 +10,5 @@
 
     <bean class="com.alibaba.water3.function.YhbFunction"/>
 
-    <bean class="com.alibaba.water3.function.YhbSupplier"/>
+    <bean class="com.alibaba.water3.function.YhbSupplier" />
 </beans>
