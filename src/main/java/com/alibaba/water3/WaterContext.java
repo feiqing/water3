@@ -25,6 +25,16 @@ public class WaterContext {
         return getCtxVal(SYS_SCOPE, "__biz_scenario__");
     }
 
+    // 业务域 ...
+    protected static void setBizDomain(String domain) {
+        setCtxVal(SYS_SCOPE, "__biz_domain__", domain);
+    }
+
+    public static String getBizDomain() {
+        return getCtxVal(SYS_SCOPE, "__biz_domain__");
+    }
+
+
     // 业务身份 ...
     protected static void setBizId(String bizId) {
         setCtxVal(SYS_SCOPE, "__biz_id__", bizId);

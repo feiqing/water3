@@ -58,6 +58,8 @@ public final class Water3 {
             }
         });
 
+        WaterContext.setBizDomain(instance.parseBizDomain(t));
+
         String bizId = instance.parseBizId(t);
         WaterContext.setBizId(bizId);
 

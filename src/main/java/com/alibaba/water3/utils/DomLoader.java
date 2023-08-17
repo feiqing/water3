@@ -42,12 +42,8 @@ public class DomLoader {
                 throw new WaterException(String.format("BusinessScenario[%s] duplicated in file:[%s]", scenario.scenario, filename));
             }
 
-            log.info("loaded BusinessScenario:[{}][{}][{}] in file:[{}].",
-                    scenario.scenario,
-                    scenario.extensionAbilityList.size(),
-                    scenario.extensionAbilityList.stream().mapToInt(ability -> ability.extensionPointList.size()).sum(),
-                    filename
-            );
+            log.info("loaded BusinessScenario:[{}][{}][{}] in file:[{}].", scenario.scenario, scenario.extensionAbilityList.size(),
+                    scenario.extensionAbilityList.stream().mapToInt(ability -> ability.extensionPointList.size()).sum(), filename);
         }
 
         return scenarios;
@@ -102,6 +98,7 @@ public class DomLoader {
         Tag.Business business = new Tag.Business(id, impl);
         business.desc = element.attributeValue("desc");
         ofNullable(element.attributeValue("priority")).map(Integer::valueOf).ifPresent(priority -> business.priority = priority);
+        ofNullable(element.attributeValue("domain")).ifPresent(domain -> business.domain = domain);
         if (StringUtils.equals("bean", impl)) {
             business.bean = loadingBean(file, path + "#" + id, element.element("bean"));
         } else if (StringUtils.equals("hsf", impl)) {

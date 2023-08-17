@@ -9,6 +9,9 @@
             <Business id="yhb, xxx" impl="bean" desc="验货宝">
                 <bean name="com.alibaba.water3.function.YhbFunction#0" lazy="true"/>
             </Business>
+            <Business domain="AT" id="/xxx/ba*" impl="bean" desc="验货宝">
+                <bean name="com.alibaba.water3.function.YhbFunction#0" lazy="true"/>
+            </Business>
         </ExtensionPoint>
     </ExtensionAbility>
 
@@ -18,6 +21,9 @@
                 <hsf service="xxx" group="xxx" version="xxx.yhb" lazy="true"/>
             </Business>
             <Business id="yhb2" impl="bean" desc="验货宝">
+                <bean name="com.alibaba.water3.function.YhbSupplier#0"/>
+            </Business>
+            <Business domain="AT" id="y**" impl="bean" desc="验货宝">
                 <bean name="com.alibaba.water3.function.YhbSupplier#0"/>
             </Business>
         </ExtensionPoint>

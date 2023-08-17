@@ -11,6 +11,8 @@ import java.util.Objects;
  */
 public class Tag {
 
+    public static final String DOMAIN_BASE = "BASE";
+
     public static class BusinessScenario implements Serializable {
 
         private static final long serialVersionUID = -8226078980396592923L;
@@ -79,6 +81,8 @@ public class Tag {
     public static class Business implements Serializable {
 
         private static final long serialVersionUID = -253145366338161711L;
+
+        public String domain = DOMAIN_BASE;
 
         public String id;
 

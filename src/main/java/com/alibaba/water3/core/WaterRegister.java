@@ -10,15 +10,19 @@ import com.alibaba.water3.utils.DomLoader;
 import com.alibaba.water3.utils.EntityConvertor;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
+
+import static com.alibaba.water3.utils.PatternMatchUtils.match;
 
 /**
  * @author jifang.zjf@alibaba-inc.com (FeiQing)
@@ -31,7 +35,7 @@ public class WaterRegister {
     private static final String WATER_XML_CONFIG_LOCATION = "classpath*:water3*.xml";
 
     // scenario -> ability(class) -> point(method) -> business -> impl
-    private static final ConcurrentMap<String, Entity.BusinessScenario> scenarioMap = new ConcurrentHashMap<>();
+    private static Map<String, Entity.BusinessScenario> scenarioMap;
 
     public static void register(String configStyle) throws Exception {
         // 1. 加载业务标签/配置
@@ -43,13 +47,18 @@ public class WaterRegister {
         }
 
         // 2. 将业务标签转换为业务实体
-        scenarioMap.putAll(EntityConvertor.toScenarioMap(tags));
+        scenarioMap = ImmutableMap.copyOf(EntityConvertor.toScenarioMap(tags));
     }
 
     public static <SPI> List<SPI> getSpiImpls(Class<SPI> extensionAbility, String extensionPoint) {
         String bizScenario = WaterContext.getBizScenario();
         if (Strings.isNullOrEmpty(bizScenario)) {
             throw new WaterException("BizScenario must be set.");
+        }
+
+        String bizDomain = WaterContext.getBizDomain();
+        if (Strings.isNullOrEmpty(bizDomain)) {
+            throw new WaterException("BizDomain must be set.");
         }
 
         String bizId = WaterContext.getBizId();
@@ -72,8 +81,21 @@ public class WaterRegister {
             throw new WaterException(String.format("ExtensionPoint:[%s#%s#%s] not found.", scenario.scenario, ability.clazz, extensionPoint));
         }
 
-        return (List<SPI>) point.id2implCache.computeIfAbsent(bizId, _K -> {
-            List<Entity.Business> business = point.id2businessMap.get(bizId);
+
+        ConcurrentMap<String, List<Object>> id2businessCache = point.domain2id2implCache.computeIfAbsent(bizDomain, _K -> new ConcurrentHashMap<>());
+        return (List<SPI>) id2businessCache.computeIfAbsent(bizId, _K -> {
+            List<Entity.Business> business;
+            // DOMAIN#BASE 走普通的kv匹配逻辑逻辑
+            if (StringUtils.equals(bizDomain, Tag.DOMAIN_BASE)) {
+                business = point.baseDomain_id2businessMap.get(bizId);
+            }
+            // 其他的DOMAIN, 由于大部分是路由扩展模式, 因此走模式匹配逻辑
+            else {
+                business = point.extDomain_domain2businessMap
+                        .getOrDefault(bizDomain, Collections.emptyList())
+                        .stream().filter(biz -> match(biz.id, bizId))
+                        .collect(Collectors.toList());
+            }
             if (CollectionUtils.isEmpty(business)) {
                 return Collections.singletonList(ability.baseImpl);
             } else {

@@ -15,6 +15,12 @@ public class Demo {
 
     @BizScenario("ORDER_CREATE")
     public static class DemoWaterParser implements WaterParser<String[]> {
+
+        @Override
+        public String parseBizDomain(String[] s) {
+            return "AT";
+        }
+
         @Override
         public String parseBizId(String[] s) {
             return s[0];

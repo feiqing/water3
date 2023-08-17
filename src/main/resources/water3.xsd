@@ -114,9 +114,16 @@
     </xsd:element>
 
     <xsd:attributeGroup name="businessAttrs">
+        <xsd:attribute name="domain" type="xsd:string" use="optional" default="BASE">
+            <xsd:annotation>
+                <xsd:documentation>业务域定义, for框架路由扩展使用, 默认的业务身份都共享BASE域下</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
         <xsd:attribute name="id" type="xsd:string" use="required">
             <xsd:annotation>
-                <xsd:documentation>业务身份定义, 目前支持','分割支持多重业务身份</xsd:documentation>
+                <xsd:documentation>业务身份定义, 目前支持','分割支持多重业务身份, 对于非BASE域的id定义, 使用模式匹配方式进行顺序匹配, 语法参考:
+                    https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/util/AntPathMatcher.html
+                </xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>
         <xsd:attribute name="impl" type="Impl" use="required">
