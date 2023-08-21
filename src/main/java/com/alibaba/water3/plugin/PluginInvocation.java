@@ -36,6 +36,7 @@ public class PluginInvocation {
     public PluginInvocation(Class<?> extensionAbilityClass, Method extensionPointMethod, String impl, Object target, Object[] args, WaterPlugin[] plugins) {
         this.extensionAbilityClass = extensionAbilityClass;
         this.extensionPointMethod = extensionPointMethod;
+        this.impl = impl;
         this.target = target;
         this.args = args;
         this.plugins = plugins;
