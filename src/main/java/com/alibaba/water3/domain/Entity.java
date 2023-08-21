@@ -22,11 +22,11 @@ public class Entity {
         public final String scenario;
 
         @Nonnull
-        public final Map<Class<?>, ExtensionAbility> class2abilityMap;
+        public final Map<Class<?>, ExtensionAbility> abilityMap;
 
-        public BusinessScenario(@Nonnull String scenario, @Nonnull Map<Class<?>, ExtensionAbility> class2abilityMap) {
+        public BusinessScenario(@Nonnull String scenario, @Nonnull Map<Class<?>, ExtensionAbility> abilityMap) {
             this.scenario = scenario;
-            this.class2abilityMap = ImmutableMap.copyOf(class2abilityMap);
+            this.abilityMap = ImmutableMap.copyOf(abilityMap);
         }
     }
 
@@ -40,12 +40,12 @@ public class Entity {
         public final Object baseImpl;
 
         @Nonnull
-        public final Map<String, ExtensionPoint> method2pointMap;
+        public final Map<String, ExtensionPoint> pointMap;
 
-        public ExtensionAbility(@Nonnull String clazz, @Nonnull Object baseImpl, @Nonnull Map<String, ExtensionPoint> method2pointMap) {
+        public ExtensionAbility(@Nonnull String clazz, @Nonnull Object baseImpl, @Nonnull Map<String, ExtensionPoint> pointMap) {
             this.clazz = clazz;
             this.baseImpl = baseImpl;
-            this.method2pointMap = ImmutableMap.copyOf(method2pointMap);
+            this.pointMap = ImmutableMap.copyOf(pointMap);
         }
     }
 
@@ -55,20 +55,20 @@ public class Entity {
         public final String method;
 
         @Nonnull
-        public final Map<String, List<Business>> baseDomain_id2businessMap;
+        public final Map<String, List<Business>> baseDomainBusinessMap; // bizId -> business
 
         @Nonnull
-        public final Map<String, List<Business>> extDomain_domain2businessMap;
+        public final Map<String, List<Business>> extDomainBusinessMap; // domain -> business
 
         @Nonnull
-        public final ConcurrentMap<String, ConcurrentMap<String, List<Object>>> domain2id2implCache = new ConcurrentHashMap<>();
+        public final ConcurrentMap<String, ConcurrentMap<String, List<Object>>> DOMAIN_ID_IMPL_CACHE = new ConcurrentHashMap<>();
 
         public ExtensionPoint(@Nonnull String method,
-                              @Nonnull Map<String, List<Business>> baseDomain_id2businessMap,
-                              @Nonnull Map<String, List<Business>> extDomain_domain2businessMap) {
+                              @Nonnull Map<String, List<Business>> baseDomainBbusinessMap,
+                              @Nonnull Map<String, List<Business>> extDomainBusinessMap) {
             this.method = method;
-            this.baseDomain_id2businessMap = ImmutableMap.copyOf(baseDomain_id2businessMap);
-            this.extDomain_domain2businessMap = ImmutableMap.copyOf(extDomain_domain2businessMap);
+            this.baseDomainBusinessMap = ImmutableMap.copyOf(baseDomainBbusinessMap);
+            this.extDomainBusinessMap = ImmutableMap.copyOf(extDomainBusinessMap);
         }
     }
 

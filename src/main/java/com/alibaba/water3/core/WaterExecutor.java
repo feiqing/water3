@@ -15,8 +15,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ServiceLoader;
 
-import static com.alibaba.water3.core.WaterRegister.getSpiImpls;
-
 /**
  * @author jifang.zjf@alibaba-inc.com (FeiQing)
  * @version 1.0
@@ -35,7 +33,7 @@ public class WaterExecutor {
         List<WaterPlugin> _plugins = new LinkedList<>();
         for (WaterPlugin plugin : loader) {
             _plugins.add(plugin);
-            log.info("loading [WaterPlugin]: {}", plugin);
+            log.info("loaded [WaterPlugin]: {}", plugin);
         }
         plugins = _plugins.toArray(new WaterPlugin[0]);
     }
@@ -66,7 +64,7 @@ public class WaterExecutor {
      */
     public static <SPI> Object proxyExecute(Class<SPI> extensionAbility, Method method, Object[] args) throws Throwable {
         Reducer reducer = reducerCtx.get();
-        List<SPI> spiImpls = getSpiImpls(extensionAbility, method.getName());
+        List<SPI> spiImpls = WaterRegister.getSpiImpls(extensionAbility, method.getName());
 
         List<Object> rs = new ArrayList<>(spiImpls.size());
         for (SPI spiImpl : spiImpls) {

@@ -32,7 +32,11 @@ public class Reducers {
      * @return
      */
     public static <T> Reducer<T, List<T>> collect(Predicate<T> predicate) {
-        return new Collector<>(predicate);
+        return new Collect<>(predicate);
+    }
+
+    public static <T> Reducer<T, List<T>> collect() {
+        return new Collect<>();
     }
 
     /**
@@ -43,7 +47,7 @@ public class Reducers {
      * @return
      */
     public static <T> Reducer<T, Boolean> anyMatch(Predicate<T> predicate) {
-        return new AnyMatcher<>(predicate);
+        return new AnyMatch<>(predicate);
     }
 
     /**
@@ -54,7 +58,18 @@ public class Reducers {
      * @return
      */
     public static <T> Reducer<T, Boolean> allMatch(Predicate<T> predicate) {
-        return new AllMatcher<>(predicate);
+        return new AllMatch<>(predicate);
+    }
+
+    /**
+     * 所有条件都不满足
+     *
+     * @param predicate
+     * @param <T>
+     * @return
+     */
+    public static <T> Reducer<T, Boolean> noneMatch(Predicate<T> predicate) {
+        return new NoneMatch<>(predicate);
     }
 
 }

@@ -30,7 +30,7 @@ public class DomLoader {
 
     private static final SAXReader saxReader = new SAXReader();
 
-    public static Set<Tag.BusinessScenario> loadingBusinessDefinition(String configFileLocation) throws Exception {
+    public static Set<Tag.BusinessScenario> loadingBusinessConfig(String configFileLocation) throws Exception {
         Resource[] resources = new PathMatchingResourcePatternResolver().getResources(configFileLocation);
         Set<Tag.BusinessScenario> scenarios = new HashSet<>(resources.length);
 

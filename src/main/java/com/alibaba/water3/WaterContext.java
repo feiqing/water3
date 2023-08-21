@@ -7,6 +7,7 @@ import java.util.Map;
  * @author qingfei
  * @date 2022/05/07
  */
+@SuppressWarnings("unchecked")
 public class WaterContext {
 
     private static final String SYS_SCOPE = "__SYS";
@@ -59,6 +60,10 @@ public class WaterContext {
 
     public static <Ext> Ext getBusinessExt(Class<Ext> ext) {
         return getBusinessExt(ext.getName());
+    }
+
+    public static void removeCtx() {
+        ctx.remove();
     }
 
     // helper ...

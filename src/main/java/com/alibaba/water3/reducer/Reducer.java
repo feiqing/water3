@@ -1,7 +1,6 @@
 package com.alibaba.water3.reducer;
 
 import java.util.Collection;
-import java.util.function.Predicate;
 
 /**
  * T是扩展点执行的结果类型
@@ -10,24 +9,23 @@ import java.util.function.Predicate;
  * @author qingfei
  * @date 2022/05/19
  */
-public abstract class Reducer<T, R> {
+public interface Reducer<T, R> {
 
-    protected Predicate<T> predicate;
 
     /**
      * 是否中断方法执行
      *
-     * @param collection
+     * @param item
      * @return
      */
-    public abstract Boolean willBreak(T collection);
+    boolean willBreak(T item);
 
     /**
      * reduce方法
      *
-     * @param collections
+     * @param collection
      * @return
      */
-    public abstract R reduce(Collection<T> collections);
+    R reduce(Collection<T> collection);
 
 }

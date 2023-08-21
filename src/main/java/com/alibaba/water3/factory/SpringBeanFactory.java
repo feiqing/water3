@@ -21,11 +21,6 @@ public class SpringBeanFactory {
     }
 
     public static Object getSpringBean(Tag.Bean bean) {
-        return beanCache.computeIfAbsent(bean.name, _k -> applicationContext.getBean(bean.name));
+        return beanCache.computeIfAbsent(bean.name, beanName -> applicationContext.getBean(beanName));
     }
-
-    public static <T> T getSpringBean(Class<T> beanClass) {
-        return applicationContext.getBean(beanClass);
-    }
-
 }

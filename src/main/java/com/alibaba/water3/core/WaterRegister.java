@@ -19,10 +19,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.stream.Collectors;
 
 import static com.alibaba.water3.utils.PatternMatchUtils.match;
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 
 /**
  * @author jifang.zjf@alibaba-inc.com (FeiQing)
@@ -34,36 +34,29 @@ public class WaterRegister {
 
     private static final String WATER_XML_CONFIG_LOCATION = "classpath*:water3*.xml";
 
-    // scenario -> ability(class) -> point(method) -> business -> impl
     private static Map<String, Entity.BusinessScenario> scenarioMap;
 
     public static void register(String configStyle) throws Exception {
-        // 1. 加载业务标签/配置
-        Collection<Tag.BusinessScenario> tags = Collections.emptyList();
-        if (StringUtils.equalsIgnoreCase(configStyle, "XML")) {
-            tags = DomLoader.loadingBusinessDefinition(WATER_XML_CONFIG_LOCATION);
-        } else {
-            // todo: 未来扩展更多的配置方式 ... (yaml? json? groovy? java?)
-        }
-
+        // 1. 加载业务配置(目前只支持XML, 未来根据需要扩展更多的配置方式: yaml? json? groovy? java?)
+        Collection<Tag.BusinessScenario> scenarios = DomLoader.loadingBusinessConfig(WATER_XML_CONFIG_LOCATION);
         // 2. 将业务标签转换为业务实体
-        scenarioMap = ImmutableMap.copyOf(EntityConvertor.toScenarioMap(tags));
+        scenarioMap = ImmutableMap.copyOf(EntityConvertor.toScenarioMap(scenarios));
     }
 
-    public static <SPI> List<SPI> getSpiImpls(Class<SPI> extensionAbility, String extensionPoint) {
+    protected static <SPI> List<SPI> getSpiImpls(Class<SPI> extensionAbility, String extensionPoint) {
         String bizScenario = WaterContext.getBizScenario();
         if (Strings.isNullOrEmpty(bizScenario)) {
-            throw new WaterException("BizScenario must be set.");
+            throw new WaterException("[BizScenario] can't be empty: please invoke Water3.parseBizId(...) before.");
         }
 
         String bizDomain = WaterContext.getBizDomain();
         if (Strings.isNullOrEmpty(bizDomain)) {
-            throw new WaterException("BizDomain must be set.");
+            throw new WaterException("[BizDomain] can't be empty: please invoke Water3.parseBizId(...) before.");
         }
 
         String bizId = WaterContext.getBizId();
         if (Strings.isNullOrEmpty(bizId)) {
-            throw new WaterException("BizId must be set.");
+            throw new WaterException("[BizId] can't be empty: please invoke Water3.parseBizId(...) before.");
         }
 
         Entity.BusinessScenario scenario = scenarioMap.get(bizScenario);
@@ -71,36 +64,35 @@ public class WaterRegister {
             throw new WaterException(String.format("BusinessScenario:[%s] not found.", bizScenario));
         }
 
-        Entity.ExtensionAbility ability = scenario.class2abilityMap.get(extensionAbility);
+        Entity.ExtensionAbility ability = scenario.abilityMap.get(extensionAbility);
         if (ability == null) {
             throw new WaterException(String.format("ExtensionAbility:[%s#%s] not found.", scenario.scenario, extensionAbility.getName()));
         }
 
-        Entity.ExtensionPoint point = ability.method2pointMap.get(extensionPoint);
+        Entity.ExtensionPoint point = ability.pointMap.get(extensionPoint);
         if (point == null) {
             throw new WaterException(String.format("ExtensionPoint:[%s#%s#%s] not found.", scenario.scenario, ability.clazz, extensionPoint));
         }
 
+        return (List<SPI>) point.DOMAIN_ID_IMPL_CACHE.computeIfAbsent(bizDomain, _K -> new ConcurrentHashMap<>()).computeIfAbsent(bizId, _K -> {
 
-        ConcurrentMap<String, List<Object>> id2businessCache = point.domain2id2implCache.computeIfAbsent(bizDomain, _K -> new ConcurrentHashMap<>());
-        return (List<SPI>) id2businessCache.computeIfAbsent(bizId, _K -> {
+            // BASE DOMAIN: 走普通的KV匹配逻辑
+            // 扩展  DOMAIN: 走模式匹配逻辑(由于扩展DOMAIN大部分for平台扩展场景, 因此模式匹配会更加适用)
+            // -- 由于扩展DOMAIN在XML定义时很难判断执行优先级, 因此本期暂定priority属性失效, 完全根据定义的顺序来排序
+            // -- @翡青 是否要根据运行时的priority来排序呢? 思考ing.... (有需求再提吧~)
+
             List<Entity.Business> business;
-            // DOMAIN#BASE 走普通的kv匹配逻辑逻辑
             if (StringUtils.equals(bizDomain, Tag.DOMAIN_BASE)) {
-                business = point.baseDomain_id2businessMap.get(bizId);
+                business = point.baseDomainBusinessMap.get(bizId);
             }
-            // 其他的DOMAIN, 由于大部分是路由扩展模式, 因此走模式匹配逻辑
             else {
-                // todo: 这里还要不要排序呢?? 疑问❓....
-                business = point.extDomain_domain2businessMap
-                        .getOrDefault(bizDomain, Collections.emptyList())
-                        .stream().filter(biz -> match(biz.id, bizId))
-                        .collect(Collectors.toList());
+                business = point.extDomainBusinessMap.getOrDefault(bizDomain, emptyList()).stream().filter(biz -> match(biz.id, bizId)).collect(toList());
             }
+
             if (CollectionUtils.isEmpty(business)) {
                 return Collections.singletonList(ability.baseImpl);
             } else {
-                return business.stream().map(WaterRegister::makeImpl).collect(Collectors.toList());
+                return business.stream().map(WaterRegister::makeImpl).collect(toList());
             }
         });
     }
