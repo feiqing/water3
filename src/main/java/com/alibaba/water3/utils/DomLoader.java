@@ -92,19 +92,19 @@ public class DomLoader {
     }
 
     private static Tag.Business loadingBusiness(String file, String path, Element element) {
-        String id = getAttrValNoneNull(element, file, path, "<Business/>", "id");
+        String code = getAttrValNoneNull(element, file, path, "<Business/>", "code");
         String impl = getAttrValNoneNull(element, file, path, "<Business/>", "impl");
 
-        Tag.Business business = new Tag.Business(id, impl);
+        Tag.Business business = new Tag.Business(code, impl);
         business.desc = element.attributeValue("desc");
         ofNullable(element.attributeValue("priority")).map(Integer::valueOf).ifPresent(priority -> business.priority = priority);
         ofNullable(element.attributeValue("domain")).ifPresent(domain -> business.domain = domain);
         if (StringUtils.equals("bean", impl)) {
-            business.bean = loadingBean(file, path + "#" + id, element.element("bean"));
+            business.bean = loadingBean(file, path + "#" + code, element.element("bean"));
         } else if (StringUtils.equals("hsf", impl)) {
-            business.hsf = loadingHsf(file, path + "#" + id, id, element.element("hsf"));
+            business.hsf = loadingHsf(file, path + "#" + code, code, element.element("hsf"));
         } else {
-            throw new WaterException(String.format("path:[%s] business id: %s 's impl:[%s] is not support in file:[%s].", path, id, impl, file));
+            throw new WaterException(String.format("path:[%s] business code: %s 's impl:[%s] is not support in file:[%s].", path, code, impl, file));
         }
 
         return business;

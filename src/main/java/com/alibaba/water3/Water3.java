@@ -45,7 +45,7 @@ public final class Water3 {
      * @param <T>
      * @return
      */
-    public static <T> String parseBizId(Class<? extends WaterParser<T>> parser, T param) {
+    public static <T> String parseBizCode(Class<? extends WaterParser<T>> parser, T param) {
 
         String bizScenario = parser2scenario.computeIfAbsent(parser, clazz -> {
             BizScenario annotation = clazz.getAnnotation(BizScenario.class);
@@ -69,10 +69,10 @@ public final class Water3 {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(bizDomain));
         WaterContext.setBizDomain(bizDomain);
 
-        String bizId = instance.parseBizId(param);
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(bizId));
-        WaterContext.setBizId(bizId);
+        String bizCode = instance.parseBizCode(param);
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(bizCode));
+        WaterContext.setBizCode(bizCode);
 
-        return bizId;
+        return bizCode;
     }
 }

@@ -84,7 +84,7 @@ public class Tag {
 
         public String domain = DOMAIN_BASE;
 
-        public String id;
+        public String code;
 
         public String impl;
 
@@ -96,8 +96,8 @@ public class Tag {
 
         public long priority = 0L;
 
-        public Business(String id, String impl) {
-            this.id = id;
+        public Business(String code, String impl) {
+            this.code = code;
             this.impl = impl;
         }
     }

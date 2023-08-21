@@ -55,13 +55,13 @@ public class Entity {
         public final String method;
 
         @Nonnull
-        public final Map<String, List<Business>> baseDomainBusinessMap; // bizId -> business
+        public final Map<String, List<Business>> baseDomainBusinessMap; // bizCode -> business
 
         @Nonnull
         public final Map<String, List<Business>> extDomainBusinessMap; // domain -> business
 
         @Nonnull
-        public final ConcurrentMap<String, ConcurrentMap<String, List<Object>>> DOMAIN_ID_IMPL_CACHE = new ConcurrentHashMap<>();
+        public final ConcurrentMap<String, ConcurrentMap<String, List<Object>>> DOMAIN_CODE_IMPL_CACHE = new ConcurrentHashMap<>();
 
         public ExtensionPoint(@Nonnull String method,
                               @Nonnull Map<String, List<Business>> baseDomainBbusinessMap,
@@ -78,7 +78,7 @@ public class Entity {
         public final String domain;
 
         @Nonnull
-        public final String id;
+        public final String code;
 
         @Nullable
         public Tag.Hsf hsf = null;
@@ -89,20 +89,20 @@ public class Entity {
         @Nullable
         public volatile Object impl = null;
 
-        private Business(@Nonnull String domain, @Nonnull String id) {
+        private Business(@Nonnull String domain, @Nonnull String code) {
             this.domain = domain;
-            this.id = id;
+            this.code = code;
         }
 
-        public static Business newHsfInstance(@Nonnull String domain, @Nonnull String id, @Nonnull Tag.Hsf hsf, @Nullable Object impl) {
-            Business business = new Business(domain, id);
+        public static Business newHsfInstance(@Nonnull String domain, @Nonnull String code, @Nonnull Tag.Hsf hsf, @Nullable Object impl) {
+            Business business = new Business(domain, code);
             business.hsf = hsf;
             business.impl = impl;
             return business;
         }
 
-        public static Business newBeanInstance(@Nonnull String domain, @Nonnull String id, @Nonnull Tag.Bean bean, @Nullable Object impl) {
-            Business business = new Business(domain, id);
+        public static Business newBeanInstance(@Nonnull String domain, @Nonnull String code, @Nonnull Tag.Bean bean, @Nullable Object impl) {
+            Business business = new Business(domain, code);
             business.bean = bean;
             business.impl = impl;
             return business;

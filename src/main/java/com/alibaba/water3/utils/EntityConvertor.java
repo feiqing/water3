@@ -55,49 +55,49 @@ public class EntityConvertor {
     }
 
     private static Map<String, List<Entity.Business>> toBaseDomainBusinessMap(List<Tag.Business> tags) throws Exception {
-        // tips: 此处要将id分割后重新排列
-        Map<String, List<Tag.Business>> id2tags = new HashMap<>();
+        // tips: 此处要将code分割后重新排列
+        Map<String, List<Tag.Business>> code2tags = new HashMap<>();
         for (Tag.Business tag : tags) {
-            for (String code : Splitter.on(",").trimResults().omitEmptyStrings().split(tag.id)) {
-                id2tags.computeIfAbsent(code, _k -> new ArrayList<>()).add(tag);
+            for (String code : Splitter.on(",").trimResults().omitEmptyStrings().split(tag.code)) {
+                code2tags.computeIfAbsent(code, _k -> new ArrayList<>()).add(tag);
             }
         }
 
-        Map<String, List<Entity.Business>> id2businessMap = new HashMap<>(id2tags.size());
-        for (Map.Entry<String, List<Tag.Business>> entry : id2tags.entrySet()) {
+        Map<String, List<Entity.Business>> code2businessMap = new HashMap<>(code2tags.size());
+        for (Map.Entry<String, List<Tag.Business>> entry : code2tags.entrySet()) {
             // tips: 基于优先级重新排序
             entry.getValue().sort(Comparator.comparing(bizTag -> bizTag.priority));
 
             List<Entity.Business> businessList = new ArrayList<>(entry.getValue().size());
             for (Tag.Business tag : entry.getValue()) {
-                businessList.add(toBusinessEntity(tag.domain, tag.id, tag));
+                businessList.add(toBusinessEntity(tag.domain, tag.code, tag));
             }
 
-            id2businessMap.put(entry.getKey(), businessList);
+            code2businessMap.put(entry.getKey(), businessList);
         }
 
-        return id2businessMap;
+        return code2businessMap;
     }
 
     private static Map<String, List<Entity.Business>> toExtDomainBusinessMap(List<Tag.Business> tags) throws Exception {
         Map<String, List<Entity.Business>> domain2businessMap = new HashMap<>(tags.size());
         for (Tag.Business tag : tags) {
-            domain2businessMap.computeIfAbsent(tag.domain, _K -> new LinkedList<>()).add(toBusinessEntity(tag.domain, tag.id, tag));
+            domain2businessMap.computeIfAbsent(tag.domain, _K -> new LinkedList<>()).add(toBusinessEntity(tag.domain, tag.code, tag));
 
         }
         return domain2businessMap;
     }
 
-    private static Entity.Business toBusinessEntity(String domain, String id, Tag.Business tag) throws Exception {
+    private static Entity.Business toBusinessEntity(String domain, String code, Tag.Business tag) throws Exception {
         if (tag.bean != null) {
-            return Entity.Business.newBeanInstance(domain, id, tag.bean, getSpringBean(tag.bean));
+            return Entity.Business.newBeanInstance(domain, code, tag.bean, getSpringBean(tag.bean));
         }
 
         if (tag.hsf != null) {
-            return Entity.Business.newHsfInstance(domain, id, tag.hsf, getHsfService(tag.hsf));
+            return Entity.Business.newHsfInstance(domain, code, tag.hsf, getHsfService(tag.hsf));
         }
 
-        throw new WaterException(String.format("BusinessExt:[%s] <bean/> and <hsf/> definition all empty.", id));
+        throw new WaterException(String.format("BusinessExt:[%s] <bean/> and <hsf/> definition all empty.", code));
     }
 
     private static Object getSpringBean(Tag.Bean bean) {

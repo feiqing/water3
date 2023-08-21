@@ -46,17 +46,17 @@ public class WaterRegister {
     protected static <SPI> List<SPI> getSpiImpls(Class<SPI> extensionAbility, String extensionPoint) {
         String bizScenario = WaterContext.getBizScenario();
         if (Strings.isNullOrEmpty(bizScenario)) {
-            throw new WaterException("[BizScenario] can't be empty: please invoke Water3.parseBizId(...) before.");
+            throw new WaterException("[BizScenario] can't be empty: please invoke Water3.parseBizCode(...) before.");
         }
 
         String bizDomain = WaterContext.getBizDomain();
         if (Strings.isNullOrEmpty(bizDomain)) {
-            throw new WaterException("[BizDomain] can't be empty: please invoke Water3.parseBizId(...) before.");
+            throw new WaterException("[BizDomain] can't be empty: please invoke Water3.parseBizCode(...) before.");
         }
 
-        String bizId = WaterContext.getBizId();
-        if (Strings.isNullOrEmpty(bizId)) {
-            throw new WaterException("[BizId] can't be empty: please invoke Water3.parseBizId(...) before.");
+        String bizCode = WaterContext.getBizCode();
+        if (Strings.isNullOrEmpty(bizCode)) {
+            throw new WaterException("[BizCode] can't be empty: please invoke Water3.parseBizCode(...) before.");
         }
 
         Entity.BusinessScenario scenario = scenarioMap.get(bizScenario);
@@ -74,7 +74,7 @@ public class WaterRegister {
             throw new WaterException(String.format("ExtensionPoint:[%s#%s#%s] not found.", scenario.scenario, ability.clazz, extensionPoint));
         }
 
-        return (List<SPI>) point.DOMAIN_ID_IMPL_CACHE.computeIfAbsent(bizDomain, _K -> new ConcurrentHashMap<>()).computeIfAbsent(bizId, _K -> {
+        return (List<SPI>) point.DOMAIN_CODE_IMPL_CACHE.computeIfAbsent(bizDomain, _K -> new ConcurrentHashMap<>()).computeIfAbsent(bizCode, _K -> {
 
             // BASE DOMAIN: 走普通的KV匹配逻辑
             // 扩展  DOMAIN: 走模式匹配逻辑(由于扩展DOMAIN大部分for平台扩展场景, 因此模式匹配会更加适用)
@@ -83,10 +83,10 @@ public class WaterRegister {
 
             List<Entity.Business> business;
             if (StringUtils.equals(bizDomain, Tag.DOMAIN_BASE)) {
-                business = point.baseDomainBusinessMap.get(bizId);
+                business = point.baseDomainBusinessMap.get(bizCode);
             }
             else {
-                business = point.extDomainBusinessMap.getOrDefault(bizDomain, emptyList()).stream().filter(biz -> match(biz.id, bizId)).collect(toList());
+                business = point.extDomainBusinessMap.getOrDefault(bizDomain, emptyList()).stream().filter(biz -> match(biz.code, bizCode)).collect(toList());
             }
 
             if (CollectionUtils.isEmpty(business)) {

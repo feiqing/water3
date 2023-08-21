@@ -13,5 +13,5 @@ public interface WaterParser<T> {
         return Tag.DOMAIN_BASE;
     }
 
-    String parseBizId(T t);
+    String parseBizCode(T t);
 }

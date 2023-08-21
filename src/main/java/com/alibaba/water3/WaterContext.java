@@ -37,12 +37,12 @@ public class WaterContext {
 
 
     // 业务身份 ...
-    protected static void setBizId(String bizId) {
-        setCtxVal(SYS_SCOPE, "__biz_id__", bizId);
+    protected static void setBizCode(String bizCode) {
+        setCtxVal(SYS_SCOPE, "__biz_code__", bizCode);
     }
 
-    public static String getBizId() {
-        return getCtxVal(SYS_SCOPE, "__biz_id__");
+    public static String getBizCode() {
+        return getCtxVal(SYS_SCOPE, "__biz_code__");
     }
 
     // 业务扩展 ...

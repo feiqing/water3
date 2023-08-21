@@ -22,7 +22,7 @@ public class Demo {
         }
 
         @Override
-        public String parseBizId(String[] s) {
+        public String parseBizCode(String[] s) {
             return s[0];
         }
     }
@@ -30,11 +30,11 @@ public class Demo {
     public static void main(String[] args) throws Exception {
         WaterStaticStarter.start("classpath:spring-*.xml");
 
-        String a  = Water3.parseBizId(DemoWaterParser.class, new String[]{"base"});
+        String a  = Water3.parseBizCode(DemoWaterParser.class, new String[]{"base"});
         Object r = Water3.execute(Function.class, function -> function.apply("haha"));
         System.out.println(r);
 
-        Water3.parseBizId(DemoWaterParser.class, new String[]{"yhb"});
+        Water3.parseBizCode(DemoWaterParser.class, new String[]{"yhb"});
         r = Water3.execute(Supplier.class, Supplier::get);
         System.out.println(r);
     }

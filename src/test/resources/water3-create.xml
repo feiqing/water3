@@ -6,10 +6,10 @@
 
     <ExtensionAbility class="java.util.function.Function" base="baseFunction" desc="测试扩展能力1">
         <ExtensionPoint method="apply" desc="apply方法">
-            <Business id="yhb, xxx" impl="bean" desc="验货宝">
+            <Business code="yhb, xxx" impl="bean" desc="验货宝">
                 <bean name="com.alibaba.water3.function.YhbFunction#0" lazy="true"/>
             </Business>
-            <Business domain="AT" id="/xxx/ba*" impl="bean" desc="验货宝">
+            <Business domain="AT" code="/xxx/ba*" impl="bean" desc="验货宝">
                 <bean name="com.alibaba.water3.function.YhbFunction#0" lazy="true"/>
             </Business>
         </ExtensionPoint>
@@ -17,13 +17,13 @@
 
     <ExtensionAbility class="java.util.function.Supplier" base="baseSupplier" desc="测试扩展能力2">
         <ExtensionPoint method="get" desc="get方法">
-            <Business id="yhb" impl="hsf" desc="验货宝">
+            <Business code="yhb" impl="hsf" desc="验货宝">
                 <hsf service="xxx" group="xxx" version="xxx.yhb" lazy="true"/>
             </Business>
-            <Business id="yhb2" impl="bean" desc="验货宝">
+            <Business code="yhb2" impl="bean" desc="验货宝">
                 <bean name="com.alibaba.water3.function.YhbSupplier#0"/>
             </Business>
-            <Business domain="AT" id="y**" impl="bean" desc="验货宝">
+            <Business domain="AT" code="y**" impl="bean" desc="验货宝">
                 <bean name="com.alibaba.water3.function.YhbSupplier#0"/>
             </Business>
         </ExtensionPoint>
