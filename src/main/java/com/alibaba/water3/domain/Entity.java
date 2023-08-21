@@ -37,14 +37,14 @@ public class Entity {
 
         // 基础实现是一定不支持懒加载的
         @Nonnull
-        public final Object baseImpl;
+        public final Object base;
 
         @Nonnull
         public final Map<String, ExtensionPoint> pointMap;
 
-        public ExtensionAbility(@Nonnull String clazz, @Nonnull Object baseImpl, @Nonnull Map<String, ExtensionPoint> pointMap) {
+        public ExtensionAbility(@Nonnull String clazz, @Nonnull Object base, @Nonnull Map<String, ExtensionPoint> pointMap) {
             this.clazz = clazz;
-            this.baseImpl = baseImpl;
+            this.base = base;
             this.pointMap = ImmutableMap.copyOf(pointMap);
         }
     }
@@ -61,14 +61,27 @@ public class Entity {
         public final Map<String, List<Business>> extDomainBusinessMap; // domain -> business
 
         @Nonnull
-        public final ConcurrentMap<String, ConcurrentMap<String, List<Object>>> DOMAIN_CODE_IMPL_CACHE = new ConcurrentHashMap<>();
+        public final ConcurrentMap<String, ConcurrentMap<String, List<InstanceWrapper>>> DOMAIN_CODE_INSTANCE_CACHE = new ConcurrentHashMap<>();
 
-        public ExtensionPoint(@Nonnull String method,
-                              @Nonnull Map<String, List<Business>> baseDomainBbusinessMap,
+        public ExtensionPoint(@Nonnull String method, @Nonnull Map<String, List<Business>> baseDomainBbusinessMap,
                               @Nonnull Map<String, List<Business>> extDomainBusinessMap) {
             this.method = method;
             this.baseDomainBusinessMap = ImmutableMap.copyOf(baseDomainBbusinessMap);
             this.extDomainBusinessMap = ImmutableMap.copyOf(extDomainBusinessMap);
+        }
+    }
+
+    public static class InstanceWrapper {
+
+        @Nonnull
+        public final String impl;
+
+        @Nonnull
+        public final Object instance;
+
+        public InstanceWrapper(@Nonnull String impl, @Nonnull Object instance) {
+            this.impl = impl;
+            this.instance = instance;
         }
     }
 
@@ -80,6 +93,9 @@ public class Entity {
         @Nonnull
         public final String code;
 
+        @Nonnull
+        public final String impl;
+
         @Nullable
         public Tag.Hsf hsf = null;
 
@@ -87,24 +103,27 @@ public class Entity {
         public Tag.Bean bean = null;
 
         @Nullable
-        public volatile Object impl = null;
+        public volatile Object instance = null;
 
-        private Business(@Nonnull String domain, @Nonnull String code) {
+        public Business(@Nonnull String domain, @Nonnull String code, @Nonnull String impl) {
             this.domain = domain;
             this.code = code;
+            this.impl = impl;
         }
 
-        public static Business newHsfInstance(@Nonnull String domain, @Nonnull String code, @Nonnull Tag.Hsf hsf, @Nullable Object impl) {
-            Business business = new Business(domain, code);
+        public static Business newHsfInstance(@Nonnull String domain, @Nonnull String code, @Nonnull String impl, @Nonnull Tag.Hsf hsf,
+                                              @Nullable Object instance) {
+            Business business = new Business(domain, code, impl);
             business.hsf = hsf;
-            business.impl = impl;
+            business.instance = instance;
             return business;
         }
 
-        public static Business newBeanInstance(@Nonnull String domain, @Nonnull String code, @Nonnull Tag.Bean bean, @Nullable Object impl) {
-            Business business = new Business(domain, code);
+        public static Business newBeanInstance(@Nonnull String domain, @Nonnull String code, @Nonnull String impl, @Nonnull Tag.Bean bean,
+                                               @Nullable Object instance) {
+            Business business = new Business(domain, code, impl);
             business.bean = bean;
-            business.impl = impl;
+            business.instance = instance;
             return business;
         }
     }

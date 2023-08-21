@@ -62,7 +62,7 @@ public class WaterContext {
         return getBusinessExt(ext.getName());
     }
 
-    public static void removeCtx() {
+    public static void clear() {
         ctx.remove();
     }
 

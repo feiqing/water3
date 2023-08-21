@@ -21,6 +21,10 @@ public class PluginInvocation {
 
     @Getter
     @Setter
+    private String impl;
+
+    @Getter
+    @Setter
     private Object target;
 
     @Getter
@@ -29,7 +33,7 @@ public class PluginInvocation {
 
     private final WaterPlugin[] plugins;
 
-    public PluginInvocation(Class<?> extensionAbilityClass, Method extensionPointMethod, Object target, Object[] args, WaterPlugin[] plugins) {
+    public PluginInvocation(Class<?> extensionAbilityClass, Method extensionPointMethod, String impl, Object target, Object[] args, WaterPlugin[] plugins) {
         this.extensionAbilityClass = extensionAbilityClass;
         this.extensionPointMethod = extensionPointMethod;
         this.target = target;

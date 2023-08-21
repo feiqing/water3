@@ -33,7 +33,7 @@ public final class Water3 {
         try {
             return WaterExecutor.execute(extensionAbility, invoker, reducer);
         } finally {
-            WaterContext.removeCtx();
+            WaterContext.clear();
         }
     }
 

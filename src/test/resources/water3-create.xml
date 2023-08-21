@@ -2,7 +2,7 @@
 <BusinessScenario xmlns="http://www.alibaba.com/idle/water3"
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                   xsi:schemaLocation="http://www.alibaba.com/idle/water3  http://www.alibaba.com/water/water3.xsd"
-                  scenario="ORDER_CREATE" desc="下单">
+                  scenario="ORDER_CREATE"  desc="com.alibaba.water3.Demo.DemoWaterParser">
 
     <ExtensionAbility class="java.util.function.Function" base="baseFunction" desc="测试扩展能力1">
         <ExtensionPoint method="apply" desc="apply方法">

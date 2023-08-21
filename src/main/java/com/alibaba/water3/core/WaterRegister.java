@@ -43,7 +43,7 @@ public class WaterRegister {
         scenarioMap = ImmutableMap.copyOf(EntityConvertor.toScenarioMap(scenarios));
     }
 
-    protected static <SPI> List<SPI> getSpiImpls(Class<SPI> extensionAbility, String extensionPoint) {
+    protected static List<Entity.InstanceWrapper> getSpiInstances(Class<?> extensionAbility, String extensionPoint) {
         String bizScenario = WaterContext.getBizScenario();
         if (Strings.isNullOrEmpty(bizScenario)) {
             throw new WaterException("[BizScenario] can't be empty: please invoke Water3.parseBizCode(...) before.");
@@ -74,7 +74,7 @@ public class WaterRegister {
             throw new WaterException(String.format("ExtensionPoint:[%s#%s#%s] not found.", scenario.scenario, ability.clazz, extensionPoint));
         }
 
-        return (List<SPI>) point.DOMAIN_CODE_IMPL_CACHE.computeIfAbsent(bizDomain, _K -> new ConcurrentHashMap<>()).computeIfAbsent(bizCode, _K -> {
+        return point.DOMAIN_CODE_INSTANCE_CACHE.computeIfAbsent(bizDomain, _K -> new ConcurrentHashMap<>()).computeIfAbsent(bizCode, _K -> {
 
             // BASE DOMAIN: 走普通的KV匹配逻辑
             // 扩展  DOMAIN: 走模式匹配逻辑(由于扩展DOMAIN大部分for平台扩展场景, 因此模式匹配会更加适用)
@@ -84,38 +84,37 @@ public class WaterRegister {
             List<Entity.Business> business;
             if (StringUtils.equals(bizDomain, Tag.DOMAIN_BASE)) {
                 business = point.baseDomainBusinessMap.get(bizCode);
-            }
-            else {
+            } else {
                 business = point.extDomainBusinessMap.getOrDefault(bizDomain, emptyList()).stream().filter(biz -> match(biz.code, bizCode)).collect(toList());
             }
 
             if (CollectionUtils.isEmpty(business)) {
-                return Collections.singletonList(ability.baseImpl);
+                return Collections.singletonList(new Entity.InstanceWrapper("base", ability.base));
             } else {
-                return business.stream().map(WaterRegister::makeImpl).collect(toList());
+                return business.stream().map(WaterRegister::makeInstance).collect(toList());
             }
         });
     }
 
-    private static Object makeImpl(Entity.Business entity) {
-        if (entity.impl != null) {
-            return entity.impl;
+    private static Entity.InstanceWrapper makeInstance(Entity.Business entity) {
+        if (entity.instance != null) {
+            return new Entity.InstanceWrapper(entity.impl, entity.instance);
         }
 
         // tips: 懒加载的具体实现
         try {
             if (entity.hsf != null) {
-                entity.impl = HsfServiceFactory.getHsfService(entity.hsf);
+                entity.instance = HsfServiceFactory.getHsfService(entity.hsf);
             }
             if (entity.bean != null) {
-                entity.impl = SpringBeanFactory.getSpringBean(entity.bean);
+                entity.instance = SpringBeanFactory.getSpringBean(entity.bean);
             }
         } catch (Exception e) {
             throw new WaterException(e);
         }
 
-        Preconditions.checkState(entity.impl != null);
+        Preconditions.checkState(entity.instance != null);
 
-        return entity.impl;
+        return new Entity.InstanceWrapper(entity.impl, entity.instance);
     }
 }

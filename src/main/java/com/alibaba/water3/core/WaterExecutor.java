@@ -1,6 +1,7 @@
 package com.alibaba.water3.core;
 
 import com.alibaba.water3.WaterExtensionPointInvoker;
+import com.alibaba.water3.domain.Entity;
 import com.alibaba.water3.exception.WaterException;
 import com.alibaba.water3.plugin.PluginInvocation;
 import com.alibaba.water3.plugin.WaterPlugin;
@@ -64,11 +65,11 @@ public class WaterExecutor {
      */
     public static <SPI> Object proxyExecute(Class<SPI> extensionAbility, Method method, Object[] args) throws Throwable {
         Reducer reducer = reducerCtx.get();
-        List<SPI> spiImpls = WaterRegister.getSpiImpls(extensionAbility, method.getName());
+        List<Entity.InstanceWrapper> instances = WaterRegister.getSpiInstances(extensionAbility, method.getName());
 
-        List<Object> rs = new ArrayList<>(spiImpls.size());
-        for (SPI spiImpl : spiImpls) {
-            Object r = invoke(extensionAbility, spiImpl, method, args);
+        List<Object> rs = new ArrayList<>(instances.size());
+        for (Entity.InstanceWrapper instance : instances) {
+            Object r = invoke(extensionAbility, instance, method, args);
             rs.add(r);
             if (reducer.willBreak(r)) {
                 break;
@@ -83,7 +84,7 @@ public class WaterExecutor {
         return r;
     }
 
-    private static <SPI> Object invoke(Class<SPI> extensionAbility, Object target, Method method, Object[] args) throws Exception {
-        return new PluginInvocation(extensionAbility, method, target, args, plugins).processed();
+    private static <SPI> Object invoke(Class<SPI> extensionAbility, Entity.InstanceWrapper wrapper, Method method, Object[] args) throws Exception {
+        return new PluginInvocation(extensionAbility, method, wrapper.impl, wrapper.instance, args, plugins).processed();
     }
 }

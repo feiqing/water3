@@ -28,8 +28,8 @@ public class EntityConvertor {
     private static Map<Class<?>, Entity.ExtensionAbility> toAbilityMap(List<Tag.ExtensionAbility> tags) throws Exception {
         Map<Class<?>, Entity.ExtensionAbility> abilityMap = new HashMap<>(tags.size());
         for (Tag.ExtensionAbility tag : tags) {
-            Object baseImpl = SpringBeanFactory.getSpringBean(new Tag.Bean(tag.base));
-            abilityMap.put(Class.forName(tag.clazz), new Entity.ExtensionAbility(tag.clazz, baseImpl, toPointMap(tag.extensionPointList)));
+            Object base = SpringBeanFactory.getSpringBean(new Tag.Bean(tag.base));
+            abilityMap.put(Class.forName(tag.clazz), new Entity.ExtensionAbility(tag.clazz, base, toPointMap(tag.extensionPointList)));
         }
         return abilityMap;
     }
@@ -90,11 +90,11 @@ public class EntityConvertor {
 
     private static Entity.Business toBusinessEntity(String domain, String code, Tag.Business tag) throws Exception {
         if (tag.bean != null) {
-            return Entity.Business.newBeanInstance(domain, code, tag.bean, getSpringBean(tag.bean));
+            return Entity.Business.newBeanInstance(domain, code, tag.impl, tag.bean, getSpringBean(tag.bean));
         }
 
         if (tag.hsf != null) {
-            return Entity.Business.newHsfInstance(domain, code, tag.hsf, getHsfService(tag.hsf));
+            return Entity.Business.newHsfInstance(domain, code, tag.impl, tag.hsf, getHsfService(tag.hsf));
         }
 
         throw new WaterException(String.format("BusinessExt:[%s] <bean/> and <hsf/> definition all empty.", code));
