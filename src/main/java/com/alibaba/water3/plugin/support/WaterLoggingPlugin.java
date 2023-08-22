@@ -27,7 +27,7 @@ public class WaterLoggingPlugin implements WaterPlugin {
             throw t;
         } finally {
             long rt = System.currentTimeMillis() - start;
-            logger.info("{}|{}|{}|{}|{}|{}|{}|{}|{}|",
+            logger.info("{}@{}@{}@{}@{}@{}@{}@{}@{}@",
                     WaterContext.getBizScenario(),
                     invocation.getExtensionAbilityClass().getName(),
                     invocation.getExtensionPointMethod().getName(),
