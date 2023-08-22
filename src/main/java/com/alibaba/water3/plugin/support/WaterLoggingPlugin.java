@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WaterLoggingPlugin implements WaterPlugin {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger logger = LoggerFactory.getLogger(WaterLoggingPlugin.class);
 
     @Override
     public Object invoke(PluginInvocation invocation) throws Exception {
@@ -27,7 +27,7 @@ public class WaterLoggingPlugin implements WaterPlugin {
             throw t;
         } finally {
             long rt = System.currentTimeMillis() - start;
-            logger.info("|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}",
+            logger.info("{}|{}|{}|{}|{}|{}|{}|{}|{}|",
                     WaterContext.getBizScenario(),
                     invocation.getExtensionAbilityClass().getName(),
                     invocation.getExtensionPointMethod().getName(),
@@ -37,7 +37,7 @@ public class WaterLoggingPlugin implements WaterPlugin {
                     getArgs(invocation),
                     getResult(result),
                     rt,
-                    except == null ? "n" : except
+                    except
             );
         }
     }
