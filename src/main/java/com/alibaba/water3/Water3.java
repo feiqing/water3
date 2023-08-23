@@ -30,11 +30,7 @@ public final class Water3 {
     }
 
     public static <SPI, T, R> R execute(Class<SPI> extensionAbility, WaterExtensionPointInvoker<SPI, T> invoker, Reducer<T, R> reducer) {
-        try {
-            return WaterExecutor.execute(extensionAbility, invoker, reducer);
-        } finally {
-            WaterContext.clear();
-        }
+        return WaterExecutor.execute(extensionAbility, invoker, reducer);
     }
 
     /**
