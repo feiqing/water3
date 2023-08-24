@@ -1,6 +1,7 @@
 package com.alibaba.water3;
 
 import com.alibaba.water3.annotation.BizScenario;
+import com.alibaba.water3.spi.ExtSpi;
 import com.alibaba.water3.starter.WaterStaticStarter;
 
 import java.util.function.Function;
@@ -30,12 +31,17 @@ public class Demo {
     public static void main(String[] args) throws Exception {
         WaterStaticStarter.start("classpath:spring-*.xml");
 
-        String a  = Water3.parseBizCode(DemoWaterParser.class, new String[]{"base"});
-        Object r = Water3.execute(Function.class, function -> function.apply("haha"));
-        System.out.println(r);
+        String bizCode  = Water3.parseBizCode(DemoWaterParser.class, new String[]{"base"});
 
-        Water3.parseBizCode(DemoWaterParser.class, new String[]{"yhb"});
-        r = Water3.execute(Supplier.class, Supplier::get);
-        System.out.println(r);
+        String execute = Water3.execute(ExtSpi.class, spi -> spi.handle(bizCode));
+        System.out.println(execute);
+
+
+//        Object r = Water3.execute(Function.class, function -> function.apply("haha"));
+//        System.out.println(r);
+//
+//        Water3.parseBizCode(DemoWaterParser.class, new String[]{"yhb"});
+//        r = Water3.execute(Supplier.class, Supplier::get);
+//        System.out.println(r);
     }
 }

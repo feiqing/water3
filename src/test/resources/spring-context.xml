@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans.xsd">
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+
 
     <bean id="baseFunction" class="com.alibaba.water3.function.BaseFunction"/>
 
@@ -10,5 +14,18 @@
 
     <bean class="com.alibaba.water3.function.YhbFunction"/>
 
-    <bean class="com.alibaba.water3.function.YhbSupplier" />
+    <bean class="com.alibaba.water3.function.YhbSupplier"/>
+
+    <bean id="implSpi" class="com.alibaba.water3.impl.ImplSpi"/>
+
+    <bean id="myAspect" class="com.alibaba.water3.spring.MyAspect"/>
+
+
+    <aop:config proxy-target-class="true">
+        <aop:pointcut id="pl" expression="bean(implSpi)"/>
+        <aop:aspect id="webLogAdvice" ref="myAspect">
+            <aop:around method="around" pointcut-ref="pl"/>
+        </aop:aspect>
+    </aop:config>
+
 </beans>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<BusinessScenario xmlns="http://www.alibaba.com/idle/water3"
+<BusinessScenario xmlns="http://www.alibaba.com/water3"
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:schemaLocation="http://www.alibaba.com/idle/water3  http://www.alibaba.com/water/water3.xsd"
-                  scenario="ORDER_CREATE"  desc="com.alibaba.water3.Demo.DemoWaterParser">
+                  xsi:schemaLocation="http://www.alibaba.com/water3  http://www.alibaba.com/water3.xsd"
+                  scenario="ORDER_CREATE" desc="com.alibaba.water3.Demo.DemoWaterParser">
 
     <ExtensionAbility class="java.util.function.Function" base="baseFunction" desc="测试扩展能力1">
         <ExtensionPoint method="apply" desc="apply方法">
@@ -26,6 +26,12 @@
             <Business domain="AT" code="y**" impl="bean" desc="验货宝">
                 <bean name="com.alibaba.water3.function.YhbSupplier#0"/>
             </Business>
+        </ExtensionPoint>
+    </ExtensionAbility>
+
+    <ExtensionAbility class="com.alibaba.water3.spi.ExtSpi" base="implSpi">
+        <ExtensionPoint method="handle">
+            
         </ExtensionPoint>
     </ExtensionAbility>
 
