@@ -5,7 +5,7 @@ package com.alibaba.water3.spi;
  * @version 1.0
  * @since 2023/8/24 16:33.
  */
-public interface BaseSpi {
+interface BaseSpi {
 
     String handle(String arg);
 }

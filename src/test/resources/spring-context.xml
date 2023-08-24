@@ -21,8 +21,8 @@
     <bean id="myAspect" class="com.alibaba.water3.spring.MyAspect"/>
 
 
-    <aop:config proxy-target-class="true">
-        <aop:pointcut id="pl" expression="bean(implSpi)"/>
+    <aop:config proxy-target-class="false">
+        <aop:pointcut id="pl" expression="bean(*Spi)"/>
         <aop:aspect id="webLogAdvice" ref="myAspect">
             <aop:around method="around" pointcut-ref="pl"/>
         </aop:aspect>

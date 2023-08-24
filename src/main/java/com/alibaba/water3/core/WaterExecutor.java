@@ -85,6 +85,7 @@ public class WaterExecutor {
     }
 
     private static <SPI> Object invoke(Class<SPI> extensionAbility, Entity.InstanceWrapper wrapper, Method method, Object[] args) throws Exception {
+        method.setAccessible(true);
         return new PluginInvocation(extensionAbility, method, wrapper.impl, wrapper.instance, args, plugins).processed();
     }
 }
