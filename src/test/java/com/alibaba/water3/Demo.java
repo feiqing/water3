@@ -4,9 +4,6 @@ import com.alibaba.water3.annotation.BizScenario;
 import com.alibaba.water3.spi.ExtSpi;
 import com.alibaba.water3.starter.WaterStaticStarter;
 
-import java.util.function.Function;
-import java.util.function.Supplier;
-
 /**
  * @author jifang.zjf@alibaba-inc.com (FeiQing)
  * @version 1.0
@@ -15,7 +12,7 @@ import java.util.function.Supplier;
 public class Demo {
 
     @BizScenario("ORDER_CREATE")
-    public static class DemoWaterParser implements WaterParser<String[]> {
+    public static class DemoBizCodeParser implements BizCodeParser<String[]> {
 
         @Override
         public String parseBizDomain(String[] s) {
@@ -31,7 +28,7 @@ public class Demo {
     public static void main(String[] args) throws Exception {
         WaterStaticStarter.start("classpath:spring-*.xml");
 
-        String bizCode  = Water3.parseBizCode(DemoWaterParser.class, new String[]{"base"});
+        String bizCode  = Water3.parseBizCode(DemoBizCodeParser.class, new String[]{"base"});
 
         String execute = Water3.execute(ExtSpi.class, spi -> spi.handle(bizCode));
         System.out.println(execute);

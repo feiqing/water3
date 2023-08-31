@@ -1,6 +1,6 @@
 package com.alibaba.water3.core;
 
-import com.alibaba.water3.WaterContext;
+import com.alibaba.water3.BizContext;
 import com.alibaba.water3.domain.Entity;
 import com.alibaba.water3.domain.Tag;
 import com.alibaba.water3.exception.WaterException;
@@ -10,6 +10,7 @@ import com.alibaba.water3.utils.DomLoader;
 import com.alibaba.water3.utils.EntityConvertor;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
@@ -43,18 +44,22 @@ public class WaterRegister {
         scenarioMap = ImmutableMap.copyOf(EntityConvertor.toScenarioMap(scenarios));
     }
 
+    public static Map<String, Entity.BusinessScenario> getScenarioMap() {
+        return scenarioMap;
+    }
+
     protected static List<Entity.InstanceWrapper> getSpiInstances(Class<?> extensionAbility, String extensionPoint) {
-        String bizScenario = WaterContext.getBizScenario();
+        String bizScenario = BizContext.getBizScenario();
         if (Strings.isNullOrEmpty(bizScenario)) {
             throw new WaterException("[BizScenario] can't be empty: please invoke Water3.parseBizCode(...) before.");
         }
 
-        String bizDomain = WaterContext.getBizDomain();
+        String bizDomain = BizContext.getBizDomain();
         if (Strings.isNullOrEmpty(bizDomain)) {
             throw new WaterException("[BizDomain] can't be empty: please invoke Water3.parseBizCode(...) before.");
         }
 
-        String bizCode = WaterContext.getBizCode();
+        String bizCode = BizContext.getBizCode();
         if (Strings.isNullOrEmpty(bizCode)) {
             throw new WaterException("[BizCode] can't be empty: please invoke Water3.parseBizCode(...) before.");
         }
@@ -110,7 +115,7 @@ public class WaterRegister {
                 entity.instance = SpringBeanFactory.getSpringBean(entity.bean);
             }
         } catch (Exception e) {
-            throw new WaterException(e);
+            throw Throwables.propagate(e);
         }
 
         Preconditions.checkState(entity.instance != null);

@@ -5,7 +5,7 @@ package com.alibaba.water3;
  * @date 2022/06/02
  */
 @FunctionalInterface
-public interface WaterExtensionPointInvoker<T, R> {
+public interface ExtensionPointInvoker<T, R> {
 
     /**
      * 回调方法

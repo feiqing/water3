@@ -8,7 +8,7 @@ import java.util.Map;
  * @date 2022/05/07
  */
 @SuppressWarnings("unchecked")
-public class WaterContext {
+public class BizContext {
 
     private static final String SYS_SCOPE = "__SYS";
 

@@ -1,20 +1,18 @@
 package com.alibaba.water3.core;
 
-import com.alibaba.water3.WaterExtensionPointInvoker;
+import com.alibaba.water3.ExtensionPointInvoker;
 import com.alibaba.water3.domain.Entity;
 import com.alibaba.water3.exception.WaterException;
 import com.alibaba.water3.plugin.PluginInvocation;
 import com.alibaba.water3.plugin.WaterPlugin;
 import com.alibaba.water3.proxy.ProxyFactory;
 import com.alibaba.water3.reducer.Reducer;
+import com.alibaba.water3.reducer.Reducers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ServiceLoader;
+import java.util.*;
 
 /**
  * @author jifang.zjf@alibaba-inc.com (FeiQing)
@@ -40,11 +38,7 @@ public class WaterExecutor {
     }
 
 
-    public static <SPI, T, R> R execute(Class<SPI> extensionAbility, WaterExtensionPointInvoker<SPI, T> invoker, Reducer<T, R> reducer) {
-        if (!extensionAbility.isInterface()) {
-            throw new WaterException(String.format("ExtensionAbility:[%s] is not interface.", extensionAbility));
-        }
-
+    public static <SPI, T, R> R execute(Class<SPI> extensionAbility, ExtensionPointInvoker<SPI, T> invoker, Reducer<T, R> reducer) {
         try {
             reducerCtx.set(reducer);
             return (R) invoker.invoke(ProxyFactory.getProxy(extensionAbility));
@@ -64,7 +58,12 @@ public class WaterExecutor {
      * @throws Throwable
      */
     public static <SPI> Object proxyExecute(Class<SPI> extensionAbility, Method method, Object[] args) throws Throwable {
-        Reducer reducer = reducerCtx.get();
+        if (!extensionAbility.isInterface()) {
+            throw new WaterException(String.format("ExtensionAbility:[%s] is not interface.", extensionAbility));
+        }
+
+        Reducer reducer = Optional.ofNullable(reducerCtx.get()).orElse(Reducers.defaultReducer);
+
         List<Entity.InstanceWrapper> instances = WaterRegister.getSpiInstances(extensionAbility, method.getName());
 
         List<Object> rs = new ArrayList<>(instances.size());

@@ -7,7 +7,10 @@ import com.alibaba.water3.reducer.Reducer;
 import com.alibaba.water3.reducer.Reducers;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -20,16 +23,16 @@ public final class Water3 {
 
     private static final ConcurrentMap<Class<?>, String> parser2scenario = new ConcurrentHashMap<>();
 
-    private static final ConcurrentMap<Class<?>, WaterParser> parser2instance = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<Class<?>, BizCodeParser> parser2instance = new ConcurrentHashMap<>();
 
     private Water3() {
     }
 
-    public static <SPI, R> R execute(Class<SPI> extensionAbility, WaterExtensionPointInvoker<SPI, R> invoker) {
-        return execute(extensionAbility, invoker, Reducers.firstOf());
+    public static <SPI, R> R execute(Class<SPI> extensionAbility, ExtensionPointInvoker<SPI, R> invoker) {
+        return (R) execute(extensionAbility, invoker, Reducers.defaultReducer);
     }
 
-    public static <SPI, T, R> R execute(Class<SPI> extensionAbility, WaterExtensionPointInvoker<SPI, T> invoker, Reducer<T, R> reducer) {
+    public static <SPI, T, R> R execute(Class<SPI> extensionAbility, ExtensionPointInvoker<SPI, T> invoker, Reducer<T, R> reducer) {
         return WaterExecutor.execute(extensionAbility, invoker, reducer);
     }
 
@@ -41,7 +44,7 @@ public final class Water3 {
      * @param <T>
      * @return
      */
-    public static <T> String parseBizCode(Class<? extends WaterParser<T>> parser, T param) {
+    public static <T> String parseBizCode(Class<? extends BizCodeParser<T>> parser, T param) {
 
         String bizScenario = parser2scenario.computeIfAbsent(parser, clazz -> {
             BizScenario annotation = clazz.getAnnotation(BizScenario.class);
@@ -51,23 +54,25 @@ public final class Water3 {
             return annotation.value();
         });
         Preconditions.checkArgument(!Strings.isNullOrEmpty(bizScenario));
-        WaterContext.setBizScenario(bizScenario);
+        BizContext.setBizScenario(bizScenario);
 
-        WaterParser<T> instance = parser2instance.computeIfAbsent(parser, clazz -> {
+        BizCodeParser<T> instance = parser2instance.computeIfAbsent(parser, clazz -> {
             try {
-                return (WaterParser) clazz.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new WaterException(e);
+                Constructor<?> constructor = clazz.getDeclaredConstructor();
+                constructor.setAccessible(true);
+                return (BizCodeParser) constructor.newInstance();
+            } catch (InvocationTargetException | InstantiationException | NoSuchMethodException | IllegalAccessException e) {
+                throw Throwables.propagate(e);
             }
         });
 
         String bizDomain = instance.parseBizDomain(param);
         Preconditions.checkArgument(!Strings.isNullOrEmpty(bizDomain));
-        WaterContext.setBizDomain(bizDomain);
+        BizContext.setBizDomain(bizDomain);
 
         String bizCode = instance.parseBizCode(param);
         Preconditions.checkArgument(!Strings.isNullOrEmpty(bizCode));
-        WaterContext.setBizCode(bizCode);
+        BizContext.setBizCode(bizCode);
 
         return bizCode;
     }

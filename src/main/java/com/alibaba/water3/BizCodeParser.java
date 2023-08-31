@@ -7,7 +7,7 @@ import com.alibaba.water3.domain.Tag;
  * @date 2022/05/02
  */
 @FunctionalInterface
-public interface WaterParser<Param> {
+public interface BizCodeParser<Param> {
 
     default String parseBizDomain(Param param) {
         return Tag.DOMAIN_BASE;

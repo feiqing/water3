@@ -1,6 +1,6 @@
 package com.alibaba.water3.plugin.support;
 
-import com.alibaba.water3.WaterContext;
+import com.alibaba.water3.BizContext;
 import com.alibaba.water3.plugin.PluginInvocation;
 import com.alibaba.water3.plugin.WaterPlugin;
 import org.slf4j.Logger;
@@ -28,11 +28,11 @@ public class WaterLoggingPlugin implements WaterPlugin {
         } finally {
             long rt = System.currentTimeMillis() - start;
             logger.info("{}/{}/{}/{}/{}/{}/{}/{}/{}",
-                    WaterContext.getBizScenario(),
+                    BizContext.getBizScenario(),
                     invocation.getExtensionAbilityClass().getName(),
                     invocation.getExtensionPointMethod().getName(),
-                    WaterContext.getBizDomain(),
-                    WaterContext.getBizCode(),
+                    BizContext.getBizDomain(),
+                    BizContext.getBizCode(),
                     invocation.getImpl(),
                     getArgs(invocation),
                     getResult(result),
