@@ -28,8 +28,8 @@ public class WaterSpringStater implements InitializingBean, ApplicationContextAw
         WaterRegister.register("XML");
     }
 
-    @Bean
-    public SpiProxyBeanRegister spiProxyBeanRegister() {
-        return new SpiProxyBeanRegister();
-    }
+//    @Bean
+//    public SpiProxyBeanRegister spiProxyBeanRegister() {
+//        return new SpiProxyBeanRegister();
+//    }
 }

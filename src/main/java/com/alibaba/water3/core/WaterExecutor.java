@@ -24,6 +24,7 @@ import java.util.*;
 public class WaterExecutor {
 
     private static final ThreadLocal<Reducer<?, ?>> reducerCtx = new ThreadLocal<>();
+    private static final ThreadLocal<Object> resultCtx = new ThreadLocal<>();
 
     private static final WaterPlugin[] plugins;
 
@@ -41,9 +42,11 @@ public class WaterExecutor {
     public static <SPI, T, R> R execute(Class<SPI> extensionAbility, ExtensionPointInvoker<SPI, T> invoker, Reducer<T, R> reducer) {
         try {
             reducerCtx.set(reducer);
-            return (R) invoker.invoke(ProxyFactory.getProxy(extensionAbility));
+            invoker.invoke(ProxyFactory.getProxy(extensionAbility));
+            return (R) resultCtx.get();
         } finally {
             reducerCtx.remove();
+            resultCtx.remove();
         }
     }
 
@@ -80,7 +83,9 @@ public class WaterExecutor {
             r = reducer.reduce(rs);
         }
 
-        return r;
+        // 防止类转换异常, 强制返回null, result通过线程上下文返回
+        resultCtx.set(r);
+        return null;
     }
 
     private static <SPI> Object invoke(Class<SPI> extensionAbility, Entity.InstanceWrapper wrapper, Method method, Object[] args) throws Exception {
