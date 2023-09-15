@@ -94,6 +94,7 @@ public class WaterRegister {
             }
 
             if (CollectionUtils.isEmpty(business)) {
+                Preconditions.checkState(extensionAbility.isInstance(ability.base));
                 return Collections.singletonList(new Entity.InstanceWrapper("base", ability.base));
             } else {
                 return business.stream().map(WaterRegister::makeInstance).collect(toList());
