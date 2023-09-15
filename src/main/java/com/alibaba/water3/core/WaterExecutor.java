@@ -29,13 +29,18 @@ public class WaterExecutor {
     private static final WaterPlugin[] plugins;
 
     static {
-        ServiceLoader<WaterPlugin> loader = ServiceLoader.load(WaterPlugin.class, WaterPlugin.class.getClassLoader());
-        List<WaterPlugin> _plugins = new LinkedList<>();
-        for (WaterPlugin plugin : loader) {
-            _plugins.add(plugin);
-            log.info("loaded [WaterPlugin]: {}", plugin);
+        try {
+            ServiceLoader<WaterPlugin> loader = ServiceLoader.load(WaterPlugin.class, WaterPlugin.class.getClassLoader());
+            List<WaterPlugin> _plugins = new LinkedList<>();
+            for (WaterPlugin plugin : loader) {
+                _plugins.add(plugin);
+                log.info("loaded [WaterPlugin]: {}", plugin);
+            }
+            plugins = _plugins.toArray(new WaterPlugin[0]);
+        } catch (Throwable t) {
+            log.error("loading WaterPlugin error.", t);
+            throw new RuntimeException(t);
         }
-        plugins = _plugins.toArray(new WaterPlugin[0]);
     }
 
 
