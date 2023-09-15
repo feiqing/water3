@@ -1,8 +1,6 @@
-package com.alibaba.water3.plugin.support;
+package com.alibaba.water3.plugin;
 
 import com.alibaba.water3.BizContext;
-import com.alibaba.water3.plugin.PluginInvocation;
-import com.alibaba.water3.plugin.WaterPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
