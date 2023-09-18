@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WaterLoggingPlugin implements WaterPlugin {
 
-    private static final Logger logger = LoggerFactory.getLogger(WaterLoggingPlugin.class);
+    private static final Logger logger = LoggerFactory.getLogger("water");
 
     @Override
     public Object invoke(PluginInvocation invocation) throws Exception {
