@@ -16,6 +16,7 @@ public class WaterLoggingPlugin implements WaterPlugin {
     @Override
     public Object invoke(PluginInvocation invocation) throws Exception {
         long start = System.currentTimeMillis();
+        Object[] args = invocation.getArgs();
         Object result = null;
         Throwable except = null;
         try {
@@ -31,7 +32,7 @@ public class WaterLoggingPlugin implements WaterPlugin {
                     BizContext.getBizCode(),
                     invocation.getType(),
                     invocation.getInstance(),
-                    getArgs(invocation),
+                    getArgs(args),
                     getResult(result),
                     rt,
                     except
@@ -39,7 +40,7 @@ public class WaterLoggingPlugin implements WaterPlugin {
         }
     }
 
-    protected Object getArgs(PluginInvocation invocation) {
+    protected Object getArgs(Object[] args) {
         return "";
     }
 

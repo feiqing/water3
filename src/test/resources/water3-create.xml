@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Extensions xmlns="http://www.alibaba.com/water3"
+<Extensions xmlns="https://www.alibaba.com/water3"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://www.alibaba.com/water3  https://www.alibaba.com/water3.xsd">
+            xsi:schemaLocation="https://www.alibaba.com/water3  https://www.alibaba.com/water3.xsd">
 
     <Extension class="java.util.function.Function" base="baseFunction" desc="测试扩展能力1">
         <Business code="yhb, xxx" type="bean" desc="验货宝">
