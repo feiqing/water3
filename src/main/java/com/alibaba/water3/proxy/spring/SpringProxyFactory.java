@@ -1,6 +1,6 @@
 package com.alibaba.water3.proxy.spring;
 
-import com.alibaba.water3.core.WaterExecutor;
+import com.alibaba.water3.core.ExtensionExecutor;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
@@ -14,26 +14,26 @@ import java.lang.reflect.Method;
  */
 public class SpringProxyFactory {
 
-    public static <SPI> Object newProxy(Class<SPI> extensionAbility) {
+    public static <SPI> Object newProxy(Class<SPI> extensionSpi) {
         Enhancer enhancer = new Enhancer();
-        enhancer.setClassLoader(extensionAbility.getClassLoader());
-        enhancer.setInterfaces(new Class[]{extensionAbility});
-        enhancer.setCallback(new SpringMethodInterceptor<>(extensionAbility));
+        enhancer.setClassLoader(extensionSpi.getClassLoader());
+        enhancer.setInterfaces(new Class[]{extensionSpi});
+        enhancer.setCallback(new SpringMethodInterceptor<>(extensionSpi));
         return enhancer.create();
     }
 
 
     private static class SpringMethodInterceptor<SPI> implements MethodInterceptor {
 
-        private final Class<SPI> extensionAbility;
+        private final Class<SPI> extensionSpi;
 
-        public SpringMethodInterceptor(Class<SPI> extensionAbility) {
-            this.extensionAbility = extensionAbility;
+        public SpringMethodInterceptor(Class<SPI> extensionSpi) {
+            this.extensionSpi = extensionSpi;
         }
 
         @Override
         public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
-            return WaterExecutor.proxyExecute(extensionAbility, method, objects);
+            return ExtensionExecutor._execute(extensionSpi, method, objects);
         }
     }
 }

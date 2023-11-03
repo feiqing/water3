@@ -1,39 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<BusinessScenario xmlns="http://www.alibaba.com/water3"
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:schemaLocation="http://www.alibaba.com/water3  http://www.alibaba.com/water3.xsd"
-                  scenario="ORDER_CREATE" desc="com.alibaba.water3.Demo.DemoWaterParser">
+<Extensions xmlns="http://www.alibaba.com/water3"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.alibaba.com/water3  https://www.alibaba.com/water3.xsd">
 
-    <ExtensionAbility class="java.util.function.Function" base="baseFunction" desc="测试扩展能力1">
-        <ExtensionPoint method="apply" desc="apply方法">
-            <Business code="yhb, xxx" impl="bean" desc="验货宝">
-                <bean name="com.alibaba.water3.function.YhbFunction#0" lazy="true"/>
-            </Business>
-            <Business domain="AT" code="/xxx/ba*" impl="bean" desc="验货宝">
-                <bean name="com.alibaba.water3.function.YhbFunction#0" lazy="true"/>
-            </Business>
-        </ExtensionPoint>
-    </ExtensionAbility>
+    <Extension class="java.util.function.Function" base="baseFunction" desc="测试扩展能力1">
+        <Business code="yhb, xxx" type="bean" desc="验货宝">
+            <bean name="com.alibaba.water3.function.YhbFunction#0" lazy="true"/>
+        </Business>
+        <Business code="6, 8" type="bean" desc="验货宝" priority="0">
+            <bean name="com.alibaba.water3.function.YhbFunction#0" lazy="true"/>
+        </Business>
+        <Router code="/xxxx/8888" type="@bean('com.alibaba.water3.function.YhbFunction#0')" method="taiSbLe" desc=""/>
+        <Router code="/xxxx/000" type="@class('com.alibaba.water3.function.YhbFunction')" method="taiSbLe"/>
+        <Router code="/xxxx/000" type="@instance('com.alibaba.water3.function.YhbFunction')" method="taiSbLe"/>
+    </Extension>
 
-    <ExtensionAbility class="java.util.function.Supplier" base="baseSupplier" desc="测试扩展能力2">
-        <ExtensionPoint method="get" desc="get方法">
-            <Business code="yhb" impl="hsf" desc="验货宝">
-                <hsf service="xxx" group="xxx" version="xxx.yhb" lazy="true"/>
-            </Business>
-            <Business code="yhb2" impl="bean" desc="验货宝">
-                <bean name="com.alibaba.water3.function.YhbSupplier#0"/>
-            </Business>
-            <Business domain="AT" code="y**" impl="bean" desc="验货宝">
-                <bean name="com.alibaba.water3.function.YhbSupplier#0"/>
-            </Business>
-        </ExtensionPoint>
-    </ExtensionAbility>
+    <Extension class="java.util.function.Supplier" base="baseSupplier" desc="测试扩展能力2">
+        <Business code="yhb" type="hsf" desc="验货宝">
+            <hsf service="xxx" group="xxx" version="xxx.yhb" lazy="true"/>
+        </Business>
 
-    <ExtensionAbility class="com.alibaba.water3.spi.ExtSpi" base="implSpi">
-        <ExtensionPoint method="handle">
-            
-        </ExtensionPoint>
-    </ExtensionAbility>
+        <Business code="y**" type="bean" desc="验货宝">
+            <bean name="com.alibaba.water3.function.YhbSupplier#0"/>
+        </Business>
+    </Extension>
 
+    <Extension class="com.alibaba.water3.spi.ExtSpi" base="com.alibaba.water3.impl.ImplSpi" desc="测试扩展能力3">
+        <Business code="yhb" type="hsf" desc="验货宝">
+            <hsf service="xxx" group="xxx" version="xxx.yhb" lazy="true"/>
+        </Business>
 
-</BusinessScenario>
+        <Router code="base**" type="@bean('com.alibaba.water3.function.YhbFunction#0')" method="taiSbLe" desc=""/>
+    </Extension>
+
+</Extensions>

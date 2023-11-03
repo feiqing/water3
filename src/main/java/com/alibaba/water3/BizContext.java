@@ -17,22 +17,13 @@ public class BizContext {
     private static final ThreadLocal<Map<String, Object>> ctx = ThreadLocal.withInitial(HashMap::new);
 
 
-    // 业务场景 ...
-    protected static void setBizScenario(String scenario) {
-        setCtxVal(SYS_SCOPE, "__biz_scenario__", scenario);
+    // 类型 ...
+    protected static void setType(String type) {
+        setCtxVal(SYS_SCOPE, "__type__", type);
     }
 
-    public static String getBizScenario() {
-        return getCtxVal(SYS_SCOPE, "__biz_scenario__");
-    }
-
-    // 业务域 ...
-    protected static void setBizDomain(String domain) {
-        setCtxVal(SYS_SCOPE, "__biz_domain__", domain);
-    }
-
-    public static String getBizDomain() {
-        return getCtxVal(SYS_SCOPE, "__biz_domain__");
+    public static String getType() {
+        return getCtxVal(SYS_SCOPE, "__type__");
     }
 
 

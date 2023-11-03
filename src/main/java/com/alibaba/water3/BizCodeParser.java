@@ -1,7 +1,5 @@
 package com.alibaba.water3;
 
-import com.alibaba.water3.domain.Tag;
-
 /**
  * @author qingfei
  * @date 2022/05/02
@@ -9,8 +7,12 @@ import com.alibaba.water3.domain.Tag;
 @FunctionalInterface
 public interface BizCodeParser<Param> {
 
-    default String parseBizDomain(Param param) {
-        return Tag.DOMAIN_BASE;
+    String TYPE_BUSINESS = "Business";
+
+    String TYPE_ROUTER = "Router";
+
+    default String type(Param param) {
+        return TYPE_BUSINESS;
     }
 
     String parseBizCode(Param param);

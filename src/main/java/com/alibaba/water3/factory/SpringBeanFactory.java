@@ -14,7 +14,7 @@ public class SpringBeanFactory {
 
     private static final ConcurrentMap<String, Object> beanCache = new ConcurrentHashMap<>();
 
-    private static ApplicationContext applicationContext;
+    public static ApplicationContext applicationContext;
 
     public static void setApplicationContext(ApplicationContext applicationContext) {
         SpringBeanFactory.applicationContext = applicationContext;

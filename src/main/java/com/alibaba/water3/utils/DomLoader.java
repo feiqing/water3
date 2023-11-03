@@ -2,21 +2,16 @@ package com.alibaba.water3.utils;
 
 import com.alibaba.water3.domain.Tag;
 import com.alibaba.water3.exception.WaterException;
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import javax.annotation.Nonnull;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.Optional.ofNullable;
 
@@ -30,81 +25,71 @@ public class DomLoader {
 
     private static final SAXReader saxReader = new SAXReader();
 
-    public static Set<Tag.BusinessScenario> loadingBusinessConfig(String configFileLocation) throws Exception {
+    public static Set<Tag.Extension> loadingConfigFiles(String configFileLocation) throws Exception {
         Resource[] resources = new PathMatchingResourcePatternResolver().getResources(configFileLocation);
-        Set<Tag.BusinessScenario> scenarios = new HashSet<>(resources.length);
+        Set<Tag.Extension> allExtensions = new HashSet<>(resources.length);
 
         for (Resource resource : resources) {
-            String filename = resource.getFilename();
-            Document document = saxReader.read(resource.getInputStream());
-            Tag.BusinessScenario scenario = loadingBusinessScenario(filename, document.getRootElement());
-            if (!scenarios.add(scenario)) {
-                throw new WaterException(String.format("BusinessScenario[%s] duplicated in file:[%s]", scenario.scenario, filename));
+            String file = resource.getFilename();
+            List<Tag.Extension> extensions = loadingFileExtensions(file, saxReader.read(resource.getInputStream()).getRootElement());
+
+            for (Tag.Extension extension : extensions) {
+                if (!allExtensions.add(extension)) {
+                    throw new WaterException(String.format("Extension:[%s] is duplicated in file:[%s]", extension.clazz, file));
+                }
+
+                log.info("loaded Extension:[{}/{}] business:{}-router:{} from file:[{}].", extension.clazz, extension.desc, extension.businessList.size(),
+                        extension.routerList.size(), file);
             }
-
-            log.info("loaded BusinessScenario:[{}][{}][{}] in file:[{}].", scenario.scenario, scenario.extensionAbilityList.size(),
-                    scenario.extensionAbilityList.stream().mapToInt(ability -> ability.extensionPointList.size()).sum(), filename);
         }
 
-        return scenarios;
+        return allExtensions;
     }
 
-    private static Tag.BusinessScenario loadingBusinessScenario(String file, Element document) {
-        String _scenario = getAttrValNoneNull(document, file, "", "<water3/>", "scenario");
+    private static List<Tag.Extension> loadingFileExtensions(String file, Element document) {
 
-        Tag.BusinessScenario scenario = new Tag.BusinessScenario(_scenario);
-        scenario.desc = document.attributeValue("desc");
-        scenario.extensionAbilityList = new LinkedList<>();
+        List<Tag.Extension> extensions = new LinkedList<>();
         for (Iterator<Element> iterator = document.elementIterator(); iterator.hasNext(); ) {
-            scenario.extensionAbilityList.add(loadingExtensionAbility(file, _scenario, iterator.next()));
+            extensions.add(loadingExtension(file, iterator.next()));
         }
 
-        return scenario;
+        return extensions;
     }
 
-    private static Tag.ExtensionAbility loadingExtensionAbility(String file, String path, Element element) {
-        String clazz = getAttrValNoneNull(element, file, path, "<ExtensionAbility/>", "class");
-        String base = getAttrValNoneNull(element, file, path, "<ExtensionAbility/>", "base");
+    private static Tag.Extension loadingExtension(String file, Element element) {
+        String clazz = getAttrValNoneNull(element, file, null, "<Extension/>", "class");
+        String base = getAttrValNoneNull(element, file, null, "<Extension/>", "base");
 
-        Tag.ExtensionAbility ability = new Tag.ExtensionAbility(clazz, base);
-        ability.desc = element.attributeValue("desc");
-        ability.extensionPointList = new LinkedList<>();
+        Tag.Extension extension = new Tag.Extension(clazz, base);
+        extension.businessList = new LinkedList<>();
+        extension.routerList = new LinkedList<>();
         for (Iterator<Element> iterator = element.elementIterator(); iterator.hasNext(); ) {
-            ability.extensionPointList.add(loadingExtensionPoint(file, path + "#" + clazz, iterator.next()));
+            Element next = iterator.next();
+            if (StringUtils.equals(next.getName(), "Business")) {
+                extension.businessList.add(loadingBusiness(file, clazz, next));
+            } else {
+                extension.routerList.add(loadingRouter(file, clazz, next));
+            }
         }
+        extension.desc = element.attributeValue("desc");
 
-        return ability;
-    }
-
-    private static Tag.ExtensionPoint loadingExtensionPoint(String file, String path, Element element) {
-        String method = getAttrValNoneNull(element, file, path, "<ExtensionPoint/>", "method");
-
-        Tag.ExtensionPoint point = new Tag.ExtensionPoint(method);
-        point.args = element.attributeValue("args");
-        point.result = element.attributeValue("result");
-        point.desc = element.attributeValue("desc");
-        point.businesList = new LinkedList<>();
-        for (Iterator<Element> iterator = element.elementIterator(); iterator.hasNext(); ) {
-            point.businesList.add(loadingBusiness(file, path + "#" + method, iterator.next()));
-        }
-
-        return point;
+        return extension;
     }
 
     private static Tag.Business loadingBusiness(String file, String path, Element element) {
         String code = getAttrValNoneNull(element, file, path, "<Business/>", "code");
-        String impl = getAttrValNoneNull(element, file, path, "<Business/>", "impl");
+        String type = getAttrValNoneNull(element, file, path, "<Business/>", "type");
 
-        Tag.Business business = new Tag.Business(code, impl);
+        Tag.Business business = new Tag.Business(code, type);
         business.desc = element.attributeValue("desc");
         ofNullable(element.attributeValue("priority")).map(Integer::valueOf).ifPresent(priority -> business.priority = priority);
-        ofNullable(element.attributeValue("domain")).ifPresent(domain -> business.domain = domain);
-        if (StringUtils.equals("bean", impl)) {
+
+        if (StringUtils.equals("bean", type)) {
             business.bean = loadingBean(file, path + "#" + code, element.element("bean"));
-        } else if (StringUtils.equals("hsf", impl)) {
+        } else if (StringUtils.equals("hsf", type)) {
             business.hsf = loadingHsf(file, path + "#" + code, code, element.element("hsf"));
         } else {
-            throw new WaterException(String.format("path:[%s] business code: %s 's impl:[%s] is not support in file:[%s].", path, code, impl, file));
+            throw new WaterException(String.format("path:[%s] business code: %s 's type:[%s] is not support in file:[%s].", path, code, type, file));
         }
 
         return business;
@@ -130,9 +115,9 @@ public class DomLoader {
 
         String service = getAttrValNoneNull(element, file, path, tag, "service");
         String version = getAttrValNoneNull(element, file, path, tag, "version");
-        if (Splitter.on(",").trimResults().omitEmptyStrings().splitToList(codes).stream().noneMatch(version::endsWith)) {
-            throw new WaterException(String.format("service:[%s] version:[%s] error in file:[%s].", service, version, file));
-        }
+//        if (Splitter.on(",").trimResults().omitEmptyStrings().splitToList(codes).stream().noneMatch(version::endsWith)) {
+//            throw new WaterException(String.format("service:[%s] version:[%s] error in file:[%s].", service, version, file));
+//        }
 
         Tag.Hsf hsf = new Tag.Hsf(service, version);
         ofNullable(element.attributeValue("group")).ifPresent(group -> hsf.group = group);
@@ -140,6 +125,18 @@ public class DomLoader {
         ofNullable(element.attributeValue("lazy")).map(Boolean::valueOf).ifPresent(lazy -> hsf.lazy = lazy);
 
         return hsf;
+    }
+
+    private static Tag.Router loadingRouter(String file, String path, Element element) {
+        String code = getAttrValNoneNull(element, file, path, "<Router/>", "code");
+        String type = getAttrValNoneNull(element, file, path, "<Router/>", "type");
+        String method = getAttrValNoneNull(element, file, path, "<Router/>", "method");
+
+        Tag.Router router = new Tag.Router(code, type, method);
+        router.desc = element.attributeValue("desc");
+        ofNullable(element.attributeValue("priority")).map(Integer::valueOf).ifPresent(priority -> router.priority = priority);
+
+        return router;
     }
 
     private static @Nonnull String getAttrValNoneNull(Element element, String file, String path, String tag, String attr) {

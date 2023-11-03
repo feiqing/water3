@@ -7,6 +7,7 @@
         http://www.springframework.org/schema/aop
         http://www.springframework.org/schema/aop/spring-aop.xsd">
 
+    <bean class="com.alibaba.water3.impl.ImplSpi"/>
 
     <bean id="baseFunction" class="com.alibaba.water3.function.BaseFunction"/>
 

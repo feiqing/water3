@@ -9,7 +9,6 @@ import java.util.function.Predicate;
  */
 public class Reducers {
 
-    public static final Reducer defaultReducer = firstOf();
 
     /**
      * 返回第一个满足的结果

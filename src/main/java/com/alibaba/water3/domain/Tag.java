@@ -2,7 +2,6 @@ package com.alibaba.water3.domain;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author jifang.zjf@alibaba-inc.com (FeiQing)
@@ -11,37 +10,7 @@ import java.util.Objects;
  */
 public class Tag {
 
-    public static final String DOMAIN_BASE = "BASE";
-
-    public static class BusinessScenario implements Serializable {
-
-        private static final long serialVersionUID = -8226078980396592923L;
-
-        public String scenario;
-
-        public String desc;
-
-        public List<ExtensionAbility> extensionAbilityList;
-
-        public BusinessScenario(String scenario) {
-            this.scenario = scenario;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            BusinessScenario that = (BusinessScenario) o;
-            return Objects.equals(scenario, that.scenario);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(scenario);
-        }
-    }
-
-    public static class ExtensionAbility implements Serializable {
+    public static class Extension implements Serializable {
 
         private static final long serialVersionUID = 6557095413659207121L;
 
@@ -51,30 +20,28 @@ public class Tag {
 
         public String desc;
 
-        public List<ExtensionPoint> extensionPointList;
+        public List<Business> businessList;
 
-        public ExtensionAbility(String clazz, String base) {
+        public List<Router> routerList;
+
+        public Extension(String clazz, String base) {
             this.clazz = clazz;
             this.base = base;
         }
-    }
 
-    public static class ExtensionPoint implements Serializable {
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
 
-        private static final long serialVersionUID = 8266020009404590458L;
+            Extension extension = (Extension) o;
 
-        public String method;
+            return clazz.equals(extension.clazz);
+        }
 
-        public String desc;
-
-        public String args;
-
-        public String result;
-
-        public List<Business> businesList;
-
-        public ExtensionPoint(String method) {
-            this.method = method;
+        @Override
+        public int hashCode() {
+            return clazz.hashCode();
         }
     }
 
@@ -82,11 +49,9 @@ public class Tag {
 
         private static final long serialVersionUID = -253145366338161711L;
 
-        public String domain = DOMAIN_BASE;
+        public final String code;
 
-        public String code;
-
-        public String impl;
+        public final String type;
 
         public String desc;
 
@@ -96,9 +61,9 @@ public class Tag {
 
         public long priority = 0L;
 
-        public Business(String code, String impl) {
+        public Business(String code, String type) {
             this.code = code;
-            this.impl = impl;
+            this.type = type;
         }
     }
 
@@ -134,4 +99,26 @@ public class Tag {
             this.version = version;
         }
     }
+
+    public static class Router implements Serializable {
+
+        private static final long serialVersionUID = -253145366338161711L;
+
+        public final String code;
+
+        public final String type;
+
+        public final String method;
+
+        public String desc;
+
+        public int priority = 0;
+
+        public Router(String code, String type, String method) {
+            this.code = code;
+            this.type = type;
+            this.method = method;
+        }
+    }
+
 }

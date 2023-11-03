@@ -13,19 +13,19 @@ import java.lang.reflect.Method;
 public class PluginInvocation {
 
     @Getter
-    private final Class<?> extensionAbilityClass;
+    private final Class<?> extensionSpi;
 
     @Getter
     @Setter
-    private Method extensionPointMethod;
+    private Method extensionMethod;
 
     @Getter
     @Setter
-    private String impl;
+    private String type;
 
     @Getter
     @Setter
-    private Object target;
+    private Object instance;
 
     @Getter
     @Setter
@@ -33,22 +33,22 @@ public class PluginInvocation {
 
     private final WaterPlugin[] plugins;
 
-    public PluginInvocation(Class<?> extensionAbilityClass, Method extensionPointMethod, String impl, Object target, Object[] args, WaterPlugin[] plugins) {
-        this.extensionAbilityClass = extensionAbilityClass;
-        this.extensionPointMethod = extensionPointMethod;
-        this.impl = impl;
-        this.target = target;
+    public PluginInvocation(Class<?> extensionSpi, Method extensionMethod, String type, Object instance, Object[] args, WaterPlugin[] plugins) {
+        this.extensionSpi = extensionSpi;
+        this.extensionMethod = extensionMethod;
+        this.type = type;
+        this.instance = instance;
         this.args = args;
         this.plugins = plugins;
     }
 
     private int idx = -1;
 
-    public Object processed() throws Exception {
+    public Object proceed() throws Exception {
         if (++idx < plugins.length) {
             return plugins[idx].invoke(this);
         } else {
-            return extensionPointMethod.invoke(target, args);
+            return extensionMethod.invoke(instance, args);
         }
     }
 }

@@ -1,5 +1,4 @@
-package com.alibaba.water3.annotation;
-
+package com.alibaba.water3;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,15 +6,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 业务场景定义
- *
  * @author jifang.zjf@alibaba-inc.com (FeiQing)
  * @version 1.0
- * @since 2023/8/15 19:35.
+ * @since 2023/10/27 16:32.
  */
-@Target(ElementType.TYPE)
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface BizScenario {
+public @interface MsgProcFunc {
 
-    String value();
+    String name() default "";
+
+    int order() default 0;
+
 }

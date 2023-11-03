@@ -1,9 +1,11 @@
 package com.alibaba.water3.domain;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,21 +18,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class Entity {
 
-    public static class BusinessScenario {
-
-        @Nonnull
-        public final String scenario;
-
-        @Nonnull
-        public final Map<Class<?>, ExtensionAbility> abilityMap;
-
-        public BusinessScenario(@Nonnull String scenario, @Nonnull Map<Class<?>, ExtensionAbility> abilityMap) {
-            this.scenario = scenario;
-            this.abilityMap = ImmutableMap.copyOf(abilityMap);
-        }
-    }
-
-    public static class ExtensionAbility {
+    public static class Extension {
 
         @Nonnull
         public final String clazz;
@@ -40,61 +28,32 @@ public class Entity {
         public final Object base;
 
         @Nonnull
-        public final Map<String, ExtensionPoint> pointMap;
+        public final Map<String, List<Business>> businessMap; // bizCode -> business
 
-        public ExtensionAbility(@Nonnull String clazz, @Nonnull Object base, @Nonnull Map<String, ExtensionPoint> pointMap) {
+        @Nonnull
+        public final List<Router> routerList;
+
+        @Nonnull
+        public final ConcurrentMap<String, SpiImpls> BUSINESS_CODE2IMPL_CACHE = new ConcurrentHashMap<>();
+
+        @Nonnull
+        public final ConcurrentMap<String, List<Router>> ROUTER_CODE2ROUTER_CACHE = new ConcurrentHashMap<>();
+
+        public Extension(@Nonnull String clazz, @Nonnull Object base, @Nonnull Map<String, List<Business>> businessMap, @Nonnull List<Router> routerList) {
             this.clazz = clazz;
             this.base = base;
-            this.pointMap = ImmutableMap.copyOf(pointMap);
-        }
-    }
-
-    public static class ExtensionPoint {
-
-        @Nonnull
-        public final String method;
-
-        @Nonnull
-        public final Map<String, List<Business>> baseDomainBusinessMap; // bizCode -> business
-
-        @Nonnull
-        public final Map<String, List<Business>> extDomainBusinessMap; // domain -> business
-
-        @Nonnull
-        public final ConcurrentMap<String, ConcurrentMap<String, List<InstanceWrapper>>> DOMAIN_CODE_INSTANCE_CACHE = new ConcurrentHashMap<>();
-
-        public ExtensionPoint(@Nonnull String method, @Nonnull Map<String, List<Business>> baseDomainBbusinessMap,
-                              @Nonnull Map<String, List<Business>> extDomainBusinessMap) {
-            this.method = method;
-            this.baseDomainBusinessMap = ImmutableMap.copyOf(baseDomainBbusinessMap);
-            this.extDomainBusinessMap = ImmutableMap.copyOf(extDomainBusinessMap);
-        }
-    }
-
-    public static class InstanceWrapper {
-
-        @Nonnull
-        public final String impl;
-
-        @Nonnull
-        public final Object instance;
-
-        public InstanceWrapper(@Nonnull String impl, @Nonnull Object instance) {
-            this.impl = impl;
-            this.instance = instance;
+            this.businessMap = ImmutableMap.copyOf(businessMap);
+            this.routerList = ImmutableList.copyOf(routerList);
         }
     }
 
     public static class Business {
 
         @Nonnull
-        public final String domain;
-
-        @Nonnull
         public final String code;
 
         @Nonnull
-        public final String impl;
+        public final String type;
 
         @Nullable
         public Tag.Hsf hsf = null;
@@ -105,26 +64,53 @@ public class Entity {
         @Nullable
         public volatile Object instance = null;
 
-        public Business(@Nonnull String domain, @Nonnull String code, @Nonnull String impl) {
-            this.domain = domain;
+        private Business(@Nonnull String code, @Nonnull String type) {
             this.code = code;
-            this.impl = impl;
+            this.type = type;
         }
 
-        public static Business newHsfInstance(@Nonnull String domain, @Nonnull String code, @Nonnull String impl, @Nonnull Tag.Hsf hsf,
-                                              @Nullable Object instance) {
-            Business business = new Business(domain, code, impl);
+        public static Business newHsfInstance(@Nonnull String code, @Nonnull String type, @Nonnull Tag.Hsf hsf, @Nullable Object instance) {
+            Business business = new Business(code, type);
             business.hsf = hsf;
             business.instance = instance;
             return business;
         }
 
-        public static Business newBeanInstance(@Nonnull String domain, @Nonnull String code, @Nonnull String impl, @Nonnull Tag.Bean bean,
-                                               @Nullable Object instance) {
-            Business business = new Business(domain, code, impl);
+        public static Business newBeanInstance(@Nonnull String code, @Nonnull String type, @Nonnull Tag.Bean bean, @Nullable Object instance) {
+            Business business = new Business(code, type);
             business.bean = bean;
             business.instance = instance;
             return business;
         }
+    }
+
+    public static class Router {
+
+        @Nonnull
+        public final String code;
+
+        @Nonnull
+        public final String type;
+
+        @Nonnull
+        public final Method method;
+
+        @Nullable
+        public Object instance;
+
+        public int priority;
+
+        private Router(@Nonnull String code, @Nonnull String type, @Nonnull Method method) {
+            this.code = code;
+            this.type = type;
+            this.method = method;
+        }
+
+        public static Router newRouter(@Nonnull String code, @Nonnull String type, @Nonnull Method method, @Nullable Object instance) {
+            Router business = new Router(code, type, method);
+            business.instance = instance;
+            return business;
+        }
+
     }
 }

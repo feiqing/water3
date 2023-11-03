@@ -1,6 +1,6 @@
 package com.alibaba.water3.starter;
 
-import com.alibaba.water3.core.WaterRegister;
+import com.alibaba.water3.core.ExtensionManager;
 import com.alibaba.water3.factory.SpringBeanFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -13,6 +13,6 @@ public class WaterStaticStarter {
 
     public static void start(String springConfigLocation) throws Exception {
         SpringBeanFactory.setApplicationContext(new ClassPathXmlApplicationContext(springConfigLocation));
-        WaterRegister.register("XML");
+        ExtensionManager.register("XML", null);
     }
 }

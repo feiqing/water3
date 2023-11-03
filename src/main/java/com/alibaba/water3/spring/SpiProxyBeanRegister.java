@@ -1,7 +1,6 @@
 package com.alibaba.water3.spring;
 
-import com.alibaba.water3.core.WaterRegister;
-import com.alibaba.water3.domain.Entity;
+import com.alibaba.water3.core.ExtensionManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -21,15 +20,13 @@ public class SpiProxyBeanRegister implements BeanDefinitionRegistryPostProcessor
 
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) throws BeansException {
-        for (Entity.BusinessScenario scenario : WaterRegister.getScenarioMap().values()) {
-            for (Class<?> spi : scenario.abilityMap.keySet()) {
-                RootBeanDefinition definition = new RootBeanDefinition();
-                definition.setBeanClass(SpiProxyFactoryBean.class);
-                definition.getPropertyValues().addPropertyValue("spi", spi);
-                definition.setPrimary(true);
-                beanDefinitionRegistry.registerBeanDefinition(spi.getName(), definition);
-                log.info("Register spi:[{}] in spring context.", spi.getName());
-            }
+        for (Class<?> spi : ExtensionManager.getExtensionMap().keySet()) {
+            RootBeanDefinition definition = new RootBeanDefinition();
+            definition.setBeanClass(SpiProxyFactoryBean.class);
+            definition.getPropertyValues().addPropertyValue("spi", spi);
+            definition.setPrimary(true);
+            beanDefinitionRegistry.registerBeanDefinition(spi.getName(), definition);
+            log.info("Register spi:[{}] in spring context.", spi.getName());
         }
     }
 

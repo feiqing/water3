@@ -1,8 +1,7 @@
 package com.alibaba.water3;
 
-import com.alibaba.water3.annotation.BizScenario;
-import com.alibaba.water3.core.WaterExecutor;
-import com.alibaba.water3.exception.WaterException;
+import com.alibaba.water3.core.ExtensionExecutor;
+import com.alibaba.water3.domain.SpiImpls;
 import com.alibaba.water3.reducer.Reducer;
 import com.alibaba.water3.reducer.Reducers;
 import com.google.common.base.Preconditions;
@@ -11,8 +10,11 @@ import com.google.common.base.Throwables;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Function;
 
 /**
  * @author qingfei
@@ -21,20 +23,27 @@ import java.util.concurrent.ConcurrentMap;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public final class Water3 {
 
-    private static final ConcurrentMap<Class<?>, String> parser2scenario = new ConcurrentHashMap<>();
-
     private static final ConcurrentMap<Class<?>, BizCodeParser> parser2instance = new ConcurrentHashMap<>();
 
     private Water3() {
     }
 
-    public static <SPI, R> R execute(Class<SPI> extensionAbility, ExtensionPointInvoker<SPI, R> invoker) {
-        return (R) execute(extensionAbility, invoker, Reducers.defaultReducer);
+    public static <SPI, R> R execute(Class<SPI> extensionSpi, ExtensionInvoker<SPI, R> invoker) {
+        return execute(extensionSpi, invoker, Reducers.firstOf());
     }
 
-    public static <SPI, T, R> R execute(Class<SPI> extensionAbility, ExtensionPointInvoker<SPI, T> invoker, Reducer<T, R> reducer) {
-        return WaterExecutor.execute(extensionAbility, invoker, reducer);
+    public static <SPI, T, R> R execute(Class<SPI> extensionSpi, ExtensionInvoker<SPI, T> invoker, Reducer<T, R> reducer) {
+        return ExtensionExecutor.execute(extensionSpi, invoker, reducer);
     }
+
+    public static <SPI, T, R> R extExecute(Class<SPI> extensionSpi, Function<SpiImpls.SpiImpl, List<Method>> methods, Object... args) {
+        return extExecute(extensionSpi, methods, Reducers.firstOf(), args);
+    }
+
+    public static <SPI, T, R> R extExecute(Class<SPI> extensionSpi, Function<SpiImpls.SpiImpl, List<Method>> methods, Reducer<T, R> reducer, Object... args) {
+        return ExtensionExecutor.extExecute(extensionSpi, methods, reducer, args);
+    }
+
 
     /**
      * 解析业务身份
@@ -46,16 +55,6 @@ public final class Water3 {
      */
     public static <T> String parseBizCode(Class<? extends BizCodeParser<T>> parser, T param) {
 
-        String bizScenario = parser2scenario.computeIfAbsent(parser, clazz -> {
-            BizScenario annotation = clazz.getAnnotation(BizScenario.class);
-            if (annotation == null) {
-                throw new WaterException(String.format("parser:[%s] none @BizScenario Annotation.", parser.getName()));
-            }
-            return annotation.value();
-        });
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(bizScenario));
-        BizContext.setBizScenario(bizScenario);
-
         BizCodeParser<T> instance = parser2instance.computeIfAbsent(parser, clazz -> {
             try {
                 Constructor<?> constructor = clazz.getDeclaredConstructor();
@@ -66,9 +65,9 @@ public final class Water3 {
             }
         });
 
-        String bizDomain = instance.parseBizDomain(param);
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(bizDomain));
-        BizContext.setBizDomain(bizDomain);
+        String type = instance.type(param);
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(type));
+        BizContext.setType(type);
 
         String bizCode = instance.parseBizCode(param);
         Preconditions.checkArgument(!Strings.isNullOrEmpty(bizCode));

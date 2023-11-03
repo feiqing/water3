@@ -7,11 +7,11 @@ import org.springframework.util.AntPathMatcher;
  * @version 1.0
  * @since 2023/8/17 14:34.
  */
-public class PatternMatchUtils {
+public class CodeMatchUtils {
 
     private static final AntPathMatcher matcher = new AntPathMatcher();
 
-    public static boolean match(String pattern, String path) {
-        return matcher.match(pattern, path);
+    public static boolean match(String pattern, String bizCode) {
+        return matcher.match(pattern, bizCode);
     }
 }

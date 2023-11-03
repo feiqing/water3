@@ -19,20 +19,18 @@ public class WaterLoggingPlugin implements WaterPlugin {
         Object result = null;
         Throwable except = null;
         try {
-            return (result = invocation.processed());
+            return (result = invocation.proceed());
         } catch (Throwable t) {
             except = t;
             throw t;
         } finally {
             long rt = System.currentTimeMillis() - start;
-            logger.info("{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|",
-                    BizContext.getBizScenario(),
-                    invocation.getExtensionAbilityClass().getName(),
-                    invocation.getExtensionPointMethod().getName(),
-                    BizContext.getBizDomain(),
+            logger.info("{}|{}|{}|{}|{}|{}|{}|{}|",
+                    invocation.getExtensionSpi().getName(),
+                    invocation.getExtensionMethod().getName(),
                     BizContext.getBizCode(),
-                    invocation.getImpl(),
-                    invocation.getTarget(),
+                    invocation.getType(),
+                    invocation.getInstance(),
                     getArgs(invocation),
                     getResult(result),
                     rt,
