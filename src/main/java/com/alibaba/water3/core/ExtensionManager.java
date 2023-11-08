@@ -17,6 +17,7 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -63,51 +64,60 @@ public class ExtensionManager {
             throw new WaterException("[BizCode] can't be empty: please invoke Water3.parseBizCode(...) before.");
         }
 
-        return getSpiImpls(type, bizCode, extensionSpi, args);
+        if (StringUtils.equals(type, BizCodeParser.TYPE_ROUTER)) {
+            return invokeRouterImpls(bizCode, extensionSpi, args);
+        } else {
+            return getBusinessSpiImpls(bizCode, extensionSpi);
+        }
     }
 
-    public static SpiImpls getSpiImpls(String type, String bizCode, Class<?> extensionSpi, Object... args) throws Exception {
+    private static SpiImpls invokeRouterImpls(String bizCode, Class<?> extensionSpi, Object... args) throws InvocationTargetException, IllegalAccessException {
         Entity.Extension extension = extensionMap.get(extensionSpi);
         if (extension == null) {
             throw new WaterException(String.format("Extension:[%s] not found.", extensionSpi.getName()));
         }
 
-        if (StringUtils.equals(type, BizCodeParser.TYPE_BUSINESS)) {
-            return extension.BUSINESS_CODE2IMPL_CACHE.computeIfAbsent(bizCode, _K -> {
-                List<Entity.Business> business = extension.businessMap.get(bizCode);
-                if (CollectionUtils.isEmpty(business)) {
-                    return new SpiImpls(Collections.singletonList(new SpiImpls.SpiImpl("base", extension.base)));
-                } else {
-                    return new SpiImpls(business.stream().map(ExtensionManager::makeImpl).collect(toList()));
-                }
-            });
-        } else {
-            List<Entity.Router> routers = extension.ROUTER_CODE2ROUTER_CACHE.computeIfAbsent(bizCode, _K -> {
-                List<Entity.Router> _routers = new ArrayList<>(extension.routerList.size());
-                for (Entity.Router router : extension.routerList) {
-                    if (match(router.code, bizCode)) {
-                        _routers.add(router);
-                    }
-                }
-                // tips: match后重新基于优先级排序
-                _routers.sort(Comparator.comparing(router -> router.priority));
-                return _routers;
-            });
-
-            SpiImpls implList = new SpiImpls();
-            for (Entity.Router router : routers) {
-                SpiImpls impls = (SpiImpls) router.method.invoke(router.instance, args);
-                if (!CollectionUtils.isEmpty(impls)) {
-                    implList.addAll(impls);
+        List<Entity.Router> routers = extension.ROUTER_CODE2ROUTER_CACHE.computeIfAbsent(bizCode, _K -> {
+            List<Entity.Router> _routers = new ArrayList<>(extension.routerList.size());
+            for (Entity.Router router : extension.routerList) {
+                if (match(router.code, bizCode)) {
+                    _routers.add(router);
                 }
             }
+            // tips: match后重新基于优先级排序
+            _routers.sort(Comparator.comparing(router -> router.priority));
+            return _routers;
+        });
 
-            if (implList.isEmpty()) {
-                return new SpiImpls(Collections.singletonList(new SpiImpls.SpiImpl("base", extension.base)));
+        SpiImpls implList = new SpiImpls();
+        for (Entity.Router router : routers) {
+            SpiImpls impls = (SpiImpls) router.method.invoke(router.instance, args);
+            if (!CollectionUtils.isEmpty(impls)) {
+                implList.addAll(impls);
             }
-
-            return implList;
         }
+
+        if (implList.isEmpty()) {
+            return new SpiImpls(Collections.singletonList(new SpiImpls.SpiImpl("base", extension.base)));
+        }
+
+        return implList;
+    }
+    
+    public static SpiImpls getBusinessSpiImpls(String bizCode, Class<?> extensionSpi) {
+        Entity.Extension extension = extensionMap.get(extensionSpi);
+        if (extension == null) {
+            throw new WaterException(String.format("Extension:[%s] not found.", extensionSpi.getName()));
+        }
+
+        return extension.BUSINESS_CODE2IMPL_CACHE.computeIfAbsent(bizCode, _K -> {
+            List<Entity.Business> business = extension.businessMap.get(bizCode);
+            if (CollectionUtils.isEmpty(business)) {
+                return new SpiImpls(Collections.singletonList(new SpiImpls.SpiImpl("base", extension.base)));
+            } else {
+                return new SpiImpls(business.stream().map(ExtensionManager::makeImpl).collect(toList()));
+            }
+        });
     }
 
     private static SpiImpls.SpiImpl makeImpl(Entity.Business entity) {
