@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  * @version 1.0
  * @since 2023/8/15 20:25.
  */
-public class WaterLoggingPlugin implements WaterPlugin {
+public class WaterLoggingPlugin implements WaterExecutePlugin {
 
     private static final Logger logger = LoggerFactory.getLogger("water");
 

@@ -5,7 +5,7 @@ package com.alibaba.water3.plugin;
  * @version 1.0
  * @since 2023/8/12 11:20.
  */
-public interface WaterPlugin {
+public interface WaterExecutePlugin {
 
     Object invoke(PluginInvocation invocation) throws Exception;
 }

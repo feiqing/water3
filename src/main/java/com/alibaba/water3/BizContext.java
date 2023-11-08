@@ -53,6 +53,14 @@ public class BizContext {
         return getBusinessExt(ext.getName());
     }
 
+    public static <Ext> void removeBusinessExt(String namespace) {
+        ctx.get().remove(EXT_SCOPE + ":" + namespace);
+    }
+
+    public static <Ext> void removeBusinessExt(Ext ext) {
+        removeBusinessExt(ext.getClass().getName());
+    }
+
     public static void clear() {
         ctx.remove();
     }

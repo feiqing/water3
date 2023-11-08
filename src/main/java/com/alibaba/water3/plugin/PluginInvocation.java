@@ -31,9 +31,9 @@ public class PluginInvocation {
     @Setter
     private Object[] args;
 
-    private final WaterPlugin[] plugins;
+    private final WaterExecutePlugin[] plugins;
 
-    public PluginInvocation(Class<?> extensionSpi, Method extensionMethod, String type, Object instance, Object[] args, WaterPlugin[] plugins) {
+    public PluginInvocation(Class<?> extensionSpi, Method extensionMethod, String type, Object instance, Object[] args, WaterExecutePlugin[] plugins) {
         this.extensionSpi = extensionSpi;
         this.extensionMethod = extensionMethod;
         this.type = type;

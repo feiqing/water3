@@ -4,7 +4,7 @@ import com.alibaba.water3.ExtensionInvoker;
 import com.alibaba.water3.domain.SpiImpls;
 import com.alibaba.water3.exception.WaterException;
 import com.alibaba.water3.plugin.PluginInvocation;
-import com.alibaba.water3.plugin.WaterPlugin;
+import com.alibaba.water3.plugin.WaterExecutePlugin;
 import com.alibaba.water3.proxy.ProxyFactory;
 import com.alibaba.water3.reducer.Reducer;
 import com.alibaba.water3.reducer.Reducers;
@@ -27,17 +27,17 @@ public class ExtensionExecutor {
     private static final ThreadLocal<Reducer<?, ?>> reducerCtx = new ThreadLocal<>();
     private static final ThreadLocal<Object> resultCtx = new ThreadLocal<>();
 
-    private static final WaterPlugin[] plugins;
+    private static final WaterExecutePlugin[] plugins;
 
     static {
         try {
-            ServiceLoader<WaterPlugin> loader = ServiceLoader.load(WaterPlugin.class, WaterPlugin.class.getClassLoader());
-            List<WaterPlugin> _plugins = new LinkedList<>();
-            for (WaterPlugin plugin : loader) {
+            ServiceLoader<WaterExecutePlugin> loader = ServiceLoader.load(WaterExecutePlugin.class, WaterExecutePlugin.class.getClassLoader());
+            List<WaterExecutePlugin> _plugins = new LinkedList<>();
+            for (WaterExecutePlugin plugin : loader) {
                 _plugins.add(plugin);
                 log.info("loaded [WaterPlugin]: {}", plugin);
             }
-            plugins = _plugins.toArray(new WaterPlugin[0]);
+            plugins = _plugins.toArray(new WaterExecutePlugin[0]);
         } catch (Throwable t) {
             log.error("loading WaterPlugin error.", t);
             throw new RuntimeException(t);
@@ -83,7 +83,7 @@ public class ExtensionExecutor {
                 break;
             }
         }
-        
+
         // 防止类转换异常, 强制返回null, result通过线程上下文返回
         resultCtx.set(reducer.reduce(rs));
         return null;

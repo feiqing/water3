@@ -17,7 +17,6 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -52,7 +51,7 @@ public class ExtensionManager {
         return extensionMap;
     }
 
-    public static SpiImpls getSpiImpls(Class<?> extensionSpi, Object[] args) throws InvocationTargetException, IllegalAccessException {
+    protected static SpiImpls getSpiImpls(Class<?> extensionSpi, Object... args) throws Exception {
 
         String type = BizContext.getType();
         if (Strings.isNullOrEmpty(type)) {
@@ -64,7 +63,10 @@ public class ExtensionManager {
             throw new WaterException("[BizCode] can't be empty: please invoke Water3.parseBizCode(...) before.");
         }
 
+        return getSpiImpls(type, bizCode, extensionSpi, args);
+    }
 
+    public static SpiImpls getSpiImpls(String type, String bizCode, Class<?> extensionSpi, Object... args) throws Exception {
         Entity.Extension extension = extensionMap.get(extensionSpi);
         if (extension == null) {
             throw new WaterException(String.format("Extension:[%s] not found.", extensionSpi.getName()));
