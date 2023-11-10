@@ -1,6 +1,6 @@
 package com.alibaba.water3.core;
 
-import com.alibaba.water3.ExtensionInvoker;
+import com.alibaba.water3.BizExtensionInvoker;
 import com.alibaba.water3.domain.SpiImpls;
 import com.alibaba.water3.exception.WaterException;
 import com.alibaba.water3.plugin.ExtensionInvocation;
@@ -31,7 +31,7 @@ public class ExtensionExecutor {
     private static final ThreadLocal<Reducer<?, ?>> reducerCtx = new ThreadLocal<>();
     private static final ThreadLocal<Object> resultCtx = new ThreadLocal<>();
 
-    public static <SPI, T, R> R execute(Class<SPI> extensionSpi, ExtensionInvoker<SPI, T> invoker, Reducer<T, R> reducer) {
+    public static <SPI, T, R> R execute(Class<SPI> extensionSpi, BizExtensionInvoker<SPI, T> invoker, Reducer<T, R> reducer) {
         try {
             reducerCtx.set(reducer);
             invoker.invoke(ProxyFactory.getProxy(extensionSpi));

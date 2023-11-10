@@ -1,8 +1,9 @@
 package com.alibaba.water3;
 
 /**
- * @author qingfei
- * @date 2022/05/02
+ * @author jifang.zjf@alibaba-inc.com (FeiQing)
+ * @version 1.0
+ * @since 2023/8/11 22:31.
  */
 @FunctionalInterface
 public interface BizCodeParser<Param> {

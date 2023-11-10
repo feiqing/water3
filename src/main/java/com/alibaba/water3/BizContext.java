@@ -4,8 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author qingfei
- * @date 2022/05/07
+ * @author jifang.zjf@alibaba-inc.com (FeiQing)
+ * @version 1.0
+ * @since 2023/8/11 22:31.
  */
 @SuppressWarnings("unchecked")
 public class BizContext {
@@ -34,6 +35,19 @@ public class BizContext {
 
     public static String getBizCode() {
         return getCtxVal(SYS_SCOPE, "__biz_code__");
+    }
+
+    // Spi ...
+    protected static void setSpi(Class<?> spi) {
+        setCtxVal(SYS_SCOPE, "__spi__", spi);
+    }
+
+    public static Class<?> getSpi() {
+        return getCtxVal(SYS_SCOPE, "__spi__");
+    }
+
+    public static void removeSpi() {
+        ctx.get().get(SYS_SCOPE + ":" + "__spi__");
     }
 
     // 业务扩展 ...

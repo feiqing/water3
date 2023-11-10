@@ -17,8 +17,9 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 
 /**
- * @author qingfei
- * @date 2022/06/02
+ * @author jifang.zjf@alibaba-inc.com (FeiQing)
+ * @version 1.0
+ * @since 2023/8/11 22:31.
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public final class Water3 {
@@ -28,29 +29,29 @@ public final class Water3 {
     private Water3() {
     }
 
-    public static <SPI, R> R execute(Class<SPI> extensionSpi, ExtensionInvoker<SPI, R> invoker) {
-        return execute(extensionSpi, invoker, Reducers.firstOf());
+    public static <SPI, R> R execute(Class<SPI> spi, BizExtensionInvoker<SPI, R> invoker) {
+        return execute(spi, invoker, Reducers.firstOf());
     }
 
-    public static <SPI, T, R> R execute(Class<SPI> extensionSpi, ExtensionInvoker<SPI, T> invoker, Reducer<T, R> reducer) {
-        BizContext.addBusinessExt("__spi__", extensionSpi);
+    public static <SPI, T, R> R execute(Class<SPI> spi, BizExtensionInvoker<SPI, T> invoker, Reducer<T, R> reducer) {
+        BizContext.setSpi(spi);
         try {
-            return ExtensionExecutor.execute(extensionSpi, invoker, reducer);
+            return ExtensionExecutor.execute(spi, invoker, reducer);
         } finally {
-            BizContext.removeBusinessExt("__spi__");
+            BizContext.removeSpi();
         }
     }
 
-    public static <SPI, T, R> R extExecute(Class<SPI> extensionSpi, Function<SpiImpls.SpiImpl, List<Method>> methods, Object... args) {
-        return extExecute(extensionSpi, methods, Reducers.firstOf(), args);
+    public static <SPI, T, R> R extExecute(Class<SPI> spi, Function<SpiImpls.SpiImpl, List<Method>> methods, Object... args) {
+        return extExecute(spi, methods, Reducers.firstOf(), args);
     }
 
-    public static <SPI, T, R> R extExecute(Class<SPI> extensionSpi, Function<SpiImpls.SpiImpl, List<Method>> methods, Reducer<T, R> reducer, Object... args) {
-        BizContext.addBusinessExt("__spi__", extensionSpi);
+    public static <SPI, T, R> R extExecute(Class<SPI> spi, Function<SpiImpls.SpiImpl, List<Method>> methods, Reducer<T, R> reducer, Object... args) {
+        BizContext.setSpi(spi);
         try {
-            return ExtensionExecutor.extExecute(extensionSpi, methods, reducer, args);
+            return ExtensionExecutor.extExecute(spi, methods, reducer, args);
         } finally {
-            BizContext.removeBusinessExt("__spi__");
+            BizContext.removeSpi();
         }
     }
 

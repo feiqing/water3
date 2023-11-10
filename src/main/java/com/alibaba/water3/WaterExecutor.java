@@ -26,19 +26,19 @@ public class WaterExecutor {
         return executor;
     }
 
-    public <T, I> T execute(Class<I> extensionClass, ExtensionInvoker<I, T> invoker) {
+    public <T, I> T execute(Class<I> extensionClass, BizExtensionInvoker<I, T> invoker) {
         return execute(extensionClass, invoker, Reducers.firstOf());
     }
 
-    public <T, R, I> R execute(Class<I> extensionClass, ExtensionInvoker<I, T> invoker, Reducer<T, R> matcher) {
+    public <T, R, I> R execute(Class<I> extensionClass, BizExtensionInvoker<I, T> invoker, Reducer<T, R> matcher) {
         return Water3.execute(extensionClass, invoker, matcher);
     }
 
-    public <T, I> T execute(Class<I> extensionClass, ExtensionInvoker<I, T> invoker, String method) {
+    public <T, I> T execute(Class<I> extensionClass, BizExtensionInvoker<I, T> invoker, String method) {
         return execute(extensionClass, invoker, method, Reducers.firstOf());
     }
 
-    public <T, R, I> R execute(Class<I> extensionClass, ExtensionInvoker<I, T> invoker, String method, Reducer<T, R> reducer) {
+    public <T, R, I> R execute(Class<I> extensionClass, BizExtensionInvoker<I, T> invoker, String method, Reducer<T, R> reducer) {
         return Water3.execute(extensionClass, invoker, reducer);
     }
 }
