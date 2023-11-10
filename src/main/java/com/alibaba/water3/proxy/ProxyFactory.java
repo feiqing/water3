@@ -19,37 +19,37 @@ public class ProxyFactory {
 
     private static final ConcurrentMap<Class<?>, Object> proxies = new ConcurrentHashMap<>();
 
-    public static <SPI> SPI getProxy(Class<SPI> extensionSpi) {
-        return (SPI) proxies.computeIfAbsent(extensionSpi, ProxyFactory::newProxy);
+    public static <SPI> SPI getProxy(Class<SPI> spi) {
+        return (SPI) proxies.computeIfAbsent(spi, ProxyFactory::newProxy);
     }
 
-    private static <SPI> Object newProxy(Class<SPI> extensionSpi) {
+    private static <SPI> Object newProxy(Class<SPI> spi) {
         if (type != null) {
             switch (type) {
                 case "spring":
-                    return SpringProxyFactory.newProxy(extensionSpi);
+                    return SpringProxyFactory.newProxy(spi);
                 case "cglib":
-                    return CglibProxyFactory.newProxy(extensionSpi);
+                    return CglibProxyFactory.newProxy(spi);
                 case "jdk":
-                    return JdkProxyFactory.newProxy(extensionSpi);
+                    return JdkProxyFactory.newProxy(spi);
             }
         }
 
         try {
             Class.forName("org.springframework.cglib.proxy.Enhancer");
             type = "spring";
-            return SpringProxyFactory.newProxy(extensionSpi);
+            return SpringProxyFactory.newProxy(spi);
         } catch (ClassNotFoundException ignored) {
         }
 
         try {
             Class.forName("net.sf.cglib.proxy.Enhancer");
             type = "cglib";
-            return CglibProxyFactory.newProxy(extensionSpi);
+            return CglibProxyFactory.newProxy(spi);
         } catch (ClassNotFoundException ignored) {
         }
 
         type = "jdk";
-        return JdkProxyFactory.newProxy(extensionSpi);
+        return JdkProxyFactory.newProxy(spi);
     }
 }

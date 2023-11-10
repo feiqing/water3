@@ -31,10 +31,10 @@ public class ExtensionExecutor {
     private static final ThreadLocal<Reducer<?, ?>> reducerCtx = new ThreadLocal<>();
     private static final ThreadLocal<Object> resultCtx = new ThreadLocal<>();
 
-    public static <SPI, T, R> R execute(Class<SPI> extensionSpi, BizExtensionInvoker<SPI, T> invoker, Reducer<T, R> reducer) {
+    public static <SPI, T, R> R execute(Class<SPI> spi, BizExtensionInvoker<SPI, T> invoker, Reducer<T, R> reducer) {
         try {
             reducerCtx.set(reducer);
-            invoker.invoke(ProxyFactory.getProxy(extensionSpi));
+            invoker.invoke(ProxyFactory.getProxy(spi));
             return (R) resultCtx.get();
         } finally {
             reducerCtx.remove();
@@ -45,25 +45,25 @@ public class ExtensionExecutor {
     /**
      * Proxy的回调
      *
-     * @param extensionSpi
+     * @param spi
      * @param method
      * @param args
      * @param <SPI>
      * @return
      * @throws Throwable
      */
-    public static <SPI> Object _execute(Class<SPI> extensionSpi, Method method, Object[] args) throws Throwable {
-        if (!extensionSpi.isInterface()) {
-            throw new WaterException(String.format("ExtensionSpi:[%s] is not interface.", extensionSpi));
+    public static <SPI> Object _execute(Class<SPI> spi, Method method, Object[] args) throws Throwable {
+        if (!spi.isInterface()) {
+            throw new WaterException(String.format("ExtensionSpi:[%s] is not interface.", spi));
         }
 
         Reducer reducer = Optional.ofNullable(reducerCtx.get()).orElse((Reducer) Reducers.firstOf());
 
-        SpiImpls impls = ExtensionManager.getSpiImpls(extensionSpi, args);
+        SpiImpls impls = ExtensionManager.getSpiImpls(spi, args);
         List<Object> rs = new ArrayList<>(impls.size());
 
         for (SpiImpls.SpiImpl impl : impls) {
-            Object r = invoke(extensionSpi, impl, method, args);
+            Object r = invoke(spi, impl, method, args);
             rs.add(r);
             if (reducer.willBreak(r)) {
                 break;
@@ -75,18 +75,18 @@ public class ExtensionExecutor {
         return null;
     }
 
-    public static <SPI, T, R> R extExecute(Class<SPI> extensionSpi, Function<SpiImpls.SpiImpl, List<Method>> methods, Reducer<T, R> reducer, Object[] args) {
-        if (!extensionSpi.isInterface()) {
-            throw new WaterException(String.format("ExtensionSpi:[%s] is not interface.", extensionSpi));
+    public static <SPI, T, R> R extExecute(Class<SPI> spi, Function<SpiImpls.SpiImpl, List<Method>> methods, Reducer<T, R> reducer, Object[] args) {
+        if (!spi.isInterface()) {
+            throw new WaterException(String.format("ExtensionSpi:[%s] is not interface.", spi));
         }
 
         try {
-            SpiImpls impls = ExtensionManager.getSpiImpls(extensionSpi, args);
+            SpiImpls impls = ExtensionManager.getSpiImpls(spi, args);
 
             List<Object> rs = new ArrayList<>(impls.size());
             for (SpiImpls.SpiImpl impl : impls) {
                 for (Method method : methods.apply(impl)) {
-                    Object r = invoke(extensionSpi, impl, method, args);
+                    Object r = invoke(spi, impl, method, args);
                     rs.add(r);
                     if (reducer.willBreak((T) r)) {
                         break;
@@ -100,8 +100,8 @@ public class ExtensionExecutor {
         }
     }
 
-    private static <SPI> Object invoke(Class<SPI> extensionSpi, SpiImpls.SpiImpl impl, Method method, Object[] args) throws Exception {
+    private static <SPI> Object invoke(Class<SPI> spi, SpiImpls.SpiImpl impl, Method method, Object[] args) throws Exception {
         method.setAccessible(true);
-        return new ExtensionInvocation(extensionSpi, method, impl.type, impl.instance, args, getPlugins()).proceed();
+        return new ExtensionInvocation(spi, method, impl.type, impl.instance, args, getPlugins()).proceed();
     }
 }

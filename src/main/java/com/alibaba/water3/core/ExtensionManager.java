@@ -76,7 +76,7 @@ public class ExtensionManager {
         return extensionMap;
     }
 
-    protected static SpiImpls getSpiImpls(Class<?> extensionSpi, Object... args) throws Exception {
+    protected static SpiImpls getSpiImpls(Class<?> spi, Object... args) throws Exception {
 
         String type = BizContext.getType();
         if (Strings.isNullOrEmpty(type)) {
@@ -89,16 +89,16 @@ public class ExtensionManager {
         }
 
         if (StringUtils.equals(type, BizCodeParser.TYPE_ROUTER)) {
-            return invokeRouterImpls(bizCode, extensionSpi, args);
+            return invokeRouterImpls(bizCode, spi, args);
         } else {
-            return getBusinessSpiImpls(bizCode, extensionSpi);
+            return getBusinessSpiImpls(bizCode, spi);
         }
     }
 
-    private static SpiImpls invokeRouterImpls(String bizCode, Class<?> extensionSpi, Object... args) throws InvocationTargetException, IllegalAccessException {
-        Entity.Extension extension = extensionMap.get(extensionSpi);
+    private static SpiImpls invokeRouterImpls(String bizCode, Class<?> spi, Object... args) throws InvocationTargetException, IllegalAccessException {
+        Entity.Extension extension = extensionMap.get(spi);
         if (extension == null) {
-            throw new WaterException(String.format("Extension:[%s] not found.", extensionSpi.getName()));
+            throw new WaterException(String.format("ExtensionSpi:[%s] not found.", spi.getName()));
         }
 
         List<Entity.Router> routers = extension.ROUTER_CODE2ROUTER_CACHE.computeIfAbsent(bizCode, _K -> {
@@ -128,10 +128,10 @@ public class ExtensionManager {
         return implList;
     }
 
-    public static SpiImpls getBusinessSpiImpls(String bizCode, Class<?> extensionSpi) {
-        Entity.Extension extension = extensionMap.get(extensionSpi);
+    public static SpiImpls getBusinessSpiImpls(String bizCode, Class<?> spi) {
+        Entity.Extension extension = extensionMap.get(spi);
         if (extension == null) {
-            throw new WaterException(String.format("Extension:[%s] not found.", extensionSpi.getName()));
+            throw new WaterException(String.format("ExtensionSpi:[%s] not found.", spi.getName()));
         }
 
         return extension.BUSINESS_CODE2IMPL_CACHE.computeIfAbsent(bizCode, _K -> {

@@ -14,26 +14,26 @@ import java.lang.reflect.Method;
  */
 public class SpringProxyFactory {
 
-    public static <SPI> Object newProxy(Class<SPI> extensionSpi) {
+    public static <SPI> Object newProxy(Class<SPI> spi) {
         Enhancer enhancer = new Enhancer();
-        enhancer.setClassLoader(extensionSpi.getClassLoader());
-        enhancer.setInterfaces(new Class[]{extensionSpi});
-        enhancer.setCallback(new SpringMethodInterceptor<>(extensionSpi));
+        enhancer.setClassLoader(spi.getClassLoader());
+        enhancer.setInterfaces(new Class[]{spi});
+        enhancer.setCallback(new SpringMethodInterceptor<>(spi));
         return enhancer.create();
     }
 
 
     private static class SpringMethodInterceptor<SPI> implements MethodInterceptor {
 
-        private final Class<SPI> extensionSpi;
+        private final Class<SPI> spi;
 
-        public SpringMethodInterceptor(Class<SPI> extensionSpi) {
-            this.extensionSpi = extensionSpi;
+        public SpringMethodInterceptor(Class<SPI> spi) {
+            this.spi = spi;
         }
 
         @Override
         public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
-            return ExtensionExecutor._execute(extensionSpi, method, objects);
+            return ExtensionExecutor._execute(spi, method, objects);
         }
     }
 }
