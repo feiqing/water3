@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
  * @version 1.0
  * @since 2023/8/12 11:21.
  */
-public class PluginInvocation {
+public class ExtensionInvocation {
 
     @Getter
     private final Class<?> extensionSpi;
@@ -31,9 +31,9 @@ public class PluginInvocation {
     @Setter
     private Object[] args;
 
-    private final WaterExecutePlugin[] plugins;
+    private final ExtensionPlugin[] plugins;
 
-    public PluginInvocation(Class<?> extensionSpi, Method extensionMethod, String type, Object instance, Object[] args, WaterExecutePlugin[] plugins) {
+    public ExtensionInvocation(Class<?> extensionSpi, Method extensionMethod, String type, Object instance, Object[] args, ExtensionPlugin[] plugins) {
         this.extensionSpi = extensionSpi;
         this.extensionMethod = extensionMethod;
         this.type = type;

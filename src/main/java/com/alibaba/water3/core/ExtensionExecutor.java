@@ -3,8 +3,7 @@ package com.alibaba.water3.core;
 import com.alibaba.water3.ExtensionInvoker;
 import com.alibaba.water3.domain.SpiImpls;
 import com.alibaba.water3.exception.WaterException;
-import com.alibaba.water3.plugin.PluginInvocation;
-import com.alibaba.water3.plugin.WaterExecutePlugin;
+import com.alibaba.water3.plugin.ExtensionInvocation;
 import com.alibaba.water3.proxy.ProxyFactory;
 import com.alibaba.water3.reducer.Reducer;
 import com.alibaba.water3.reducer.Reducers;
@@ -12,8 +11,13 @@ import com.google.common.base.Throwables;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
+
+import static com.alibaba.water3.core.ExtensionManager.getPlugins;
 
 /**
  * @author jifang.zjf@alibaba-inc.com (FeiQing)
@@ -26,24 +30,6 @@ public class ExtensionExecutor {
 
     private static final ThreadLocal<Reducer<?, ?>> reducerCtx = new ThreadLocal<>();
     private static final ThreadLocal<Object> resultCtx = new ThreadLocal<>();
-
-    private static final WaterExecutePlugin[] plugins;
-
-    static {
-        try {
-            ServiceLoader<WaterExecutePlugin> loader = ServiceLoader.load(WaterExecutePlugin.class, WaterExecutePlugin.class.getClassLoader());
-            List<WaterExecutePlugin> _plugins = new LinkedList<>();
-            for (WaterExecutePlugin plugin : loader) {
-                _plugins.add(plugin);
-                log.info("loaded [WaterPlugin]: {}", plugin);
-            }
-            plugins = _plugins.toArray(new WaterExecutePlugin[0]);
-        } catch (Throwable t) {
-            log.error("loading WaterPlugin error.", t);
-            throw new RuntimeException(t);
-        }
-    }
-
 
     public static <SPI, T, R> R execute(Class<SPI> extensionSpi, ExtensionInvoker<SPI, T> invoker, Reducer<T, R> reducer) {
         try {
@@ -116,6 +102,6 @@ public class ExtensionExecutor {
 
     private static <SPI> Object invoke(Class<SPI> extensionSpi, SpiImpls.SpiImpl impl, Method method, Object[] args) throws Exception {
         method.setAccessible(true);
-        return new PluginInvocation(extensionSpi, method, impl.type, impl.instance, args, plugins).proceed();
+        return new ExtensionInvocation(extensionSpi, method, impl.type, impl.instance, args, getPlugins()).proceed();
     }
 }

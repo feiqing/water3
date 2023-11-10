@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class SpringBeanFactory {
 
-    private static final ConcurrentMap<String, Object> beanCache = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<String, Object> name2bean = new ConcurrentHashMap<>();
 
     public static ApplicationContext applicationContext;
 
@@ -21,6 +21,10 @@ public class SpringBeanFactory {
     }
 
     public static Object getSpringBean(Tag.Bean bean) {
-        return beanCache.computeIfAbsent(bean.name, beanName -> applicationContext.getBean(beanName));
+        return getSpringBean(bean.name);
+    }
+
+    public static Object getSpringBean(String beanName) {
+        return name2bean.computeIfAbsent(beanName, _beanName -> applicationContext.getBean(beanName));
     }
 }

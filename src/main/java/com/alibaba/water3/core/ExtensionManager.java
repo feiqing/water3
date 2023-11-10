@@ -8,12 +8,14 @@ import com.alibaba.water3.domain.Tag;
 import com.alibaba.water3.exception.WaterException;
 import com.alibaba.water3.factory.HsfServiceFactory;
 import com.alibaba.water3.factory.SpringBeanFactory;
+import com.alibaba.water3.plugin.ExtensionPlugin;
 import com.alibaba.water3.utils.DomLoader;
 import com.alibaba.water3.utils.EntityConvertor;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -21,7 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Consumer;
 
-import static com.alibaba.water3.utils.CodeMatchUtils.match;
+import static com.alibaba.water3.utils.AntMatchUtils.match;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -29,11 +31,33 @@ import static java.util.stream.Collectors.toList;
  * @version 1.0
  * @since 2023/8/11 17:52.
  */
+@Slf4j
 public class ExtensionManager {
 
     private static final String WATER_XML_CONFIG_LOCATION = "classpath*:water3*.xml";
 
     private static Map<Class<?>, Entity.Extension> extensionMap;
+
+    private static final ExtensionPlugin[] plugins;
+
+    static {
+        try {
+            List<ExtensionPlugin> _plugins = new LinkedList<>();
+            for (ExtensionPlugin plugin : ServiceLoader.load(ExtensionPlugin.class, ExtensionPlugin.class.getClassLoader())) {
+                log.info("loaded [ExtensionPlugin]: {}", plugin);
+                _plugins.add(plugin);
+            }
+            plugins = _plugins.toArray(new ExtensionPlugin[0]);
+        } catch (Throwable t) {
+            log.error("loading [ExtensionPlugin] error.", t);
+            throw new RuntimeException(t);
+        }
+    }
+
+    public static ExtensionPlugin[] getPlugins() {
+        return plugins;
+    }
+
 
     public static void register(String configStyle, Consumer<Set<Tag.Extension>> processor) throws Exception {
         // 1. 加载业务配置(目前只支持XML, 未来根据需要扩展更多的配置方式: yaml? json? groovy? java?)
@@ -103,7 +127,7 @@ public class ExtensionManager {
 
         return implList;
     }
-    
+
     public static SpiImpls getBusinessSpiImpls(String bizCode, Class<?> extensionSpi) {
         Entity.Extension extension = extensionMap.get(extensionSpi);
         if (extension == null) {

@@ -9,12 +9,12 @@ import org.slf4j.LoggerFactory;
  * @version 1.0
  * @since 2023/8/15 20:25.
  */
-public class WaterLoggingPlugin implements WaterExecutePlugin {
+public class ExtensionLoggingPlugin implements ExtensionPlugin {
 
     private static final Logger logger = LoggerFactory.getLogger("water");
 
     @Override
-    public Object invoke(PluginInvocation invocation) throws Exception {
+    public Object invoke(ExtensionInvocation invocation) throws Exception {
         long start = System.currentTimeMillis();
         Object[] args = invocation.getArgs();
         Object result = null;
