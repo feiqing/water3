@@ -13,22 +13,22 @@ import java.lang.reflect.Proxy;
  */
 public class JdkProxyFactory {
 
-    public static <SPI> Object newProxy(Class<SPI> extensionSpi) {
-        return Proxy.newProxyInstance(extensionSpi.getClassLoader(), new Class[]{extensionSpi}, new JdkInvocationHandler<>(extensionSpi));
+    public static <SPI> Object newProxy(Class<SPI> spi) {
+        return Proxy.newProxyInstance(spi.getClassLoader(), new Class[]{spi}, new JdkInvocationHandler<>(spi));
 
     }
 
     private static class JdkInvocationHandler<SPI> implements InvocationHandler {
 
-        private final Class<SPI> extensionSpi;
+        private final Class<SPI> spi;
 
-        public JdkInvocationHandler(Class<SPI> extensionSpi) {
-            this.extensionSpi = extensionSpi;
+        public JdkInvocationHandler(Class<SPI> spi) {
+            this.spi = spi;
         }
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            return ExtensionExecutor._execute(extensionSpi, method, args);
+            return ExtensionExecutor._execute(spi, method, args);
         }
     }
 }

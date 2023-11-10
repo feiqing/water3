@@ -14,25 +14,25 @@ import java.lang.reflect.Method;
  */
 public class CglibProxyFactory {
 
-    public static <SPI> Object newProxy(Class<SPI> extensionSpi) {
+    public static <SPI> Object newProxy(Class<SPI> spi) {
         Enhancer enhancer = new Enhancer();
-        enhancer.setClassLoader(extensionSpi.getClassLoader());
-        enhancer.setInterfaces(new Class[]{extensionSpi});
-        enhancer.setCallback(new CglibMethodInterceptor<>(extensionSpi));
+        enhancer.setClassLoader(spi.getClassLoader());
+        enhancer.setInterfaces(new Class[]{spi});
+        enhancer.setCallback(new CglibMethodInterceptor<>(spi));
         return enhancer.create();
     }
 
     private static class CglibMethodInterceptor<SPI> implements MethodInterceptor {
 
-        private final Class<SPI> extensionSpi;
+        private final Class<SPI> spi;
 
-        public CglibMethodInterceptor(Class<SPI> extensionSpi) {
-            this.extensionSpi = extensionSpi;
+        public CglibMethodInterceptor(Class<SPI> spi) {
+            this.spi = spi;
         }
 
         @Override
         public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
-            return ExtensionExecutor._execute(extensionSpi, method, objects);
+            return ExtensionExecutor._execute(spi, method, objects);
         }
     }
 }
