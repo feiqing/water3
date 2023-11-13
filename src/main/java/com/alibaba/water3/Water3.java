@@ -76,9 +76,9 @@ public final class Water3 {
             }
         });
 
-        String type = instance.type(param);
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(type));
-        BizContext.setType(type);
+        BizRouter bizRouter = instance.getBizRouter(param);
+        Preconditions.checkArgument(bizRouter != null);
+        BizContext.setBizRouter(bizRouter);
 
         String bizCode = instance.parseBizCode(param);
         Preconditions.checkArgument(!Strings.isNullOrEmpty(bizCode));

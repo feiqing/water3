@@ -1,11 +1,9 @@
 package com.alibaba.water3.domain;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,19 +29,12 @@ public class Entity {
         public final Map<String, List<Business>> businessMap; // bizCode -> business
 
         @Nonnull
-        public final List<Router> routerList;
-
-        @Nonnull
         public final ConcurrentMap<String, SpiImpls> BUSINESS_CODE2IMPL_CACHE = new ConcurrentHashMap<>();
 
-        @Nonnull
-        public final ConcurrentMap<String, List<Router>> ROUTER_CODE2ROUTER_CACHE = new ConcurrentHashMap<>();
-
-        public Extension(@Nonnull String clazz, @Nonnull Object base, @Nonnull Map<String, List<Business>> businessMap, @Nonnull List<Router> routerList) {
+        public Extension(@Nonnull String clazz, @Nonnull Object base, @Nonnull Map<String, List<Business>> businessMap) {
             this.clazz = clazz;
             this.base = base;
             this.businessMap = ImmutableMap.copyOf(businessMap);
-            this.routerList = ImmutableList.copyOf(routerList);
         }
     }
 
@@ -82,35 +73,5 @@ public class Entity {
             business.instance = instance;
             return business;
         }
-    }
-
-    public static class Router {
-
-        @Nonnull
-        public final String code;
-
-        @Nonnull
-        public final String type;
-
-        @Nonnull
-        public final Method method;
-
-        @Nullable
-        public Object instance;
-
-        public int priority;
-
-        private Router(@Nonnull String code, @Nonnull String type, @Nonnull Method method) {
-            this.code = code;
-            this.type = type;
-            this.method = method;
-        }
-
-        public static Router newRouter(@Nonnull String code, @Nonnull String type, @Nonnull Method method, @Nullable Object instance) {
-            Router business = new Router(code, type, method);
-            business.instance = instance;
-            return business;
-        }
-
     }
 }

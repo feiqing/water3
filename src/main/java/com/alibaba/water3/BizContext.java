@@ -18,15 +18,14 @@ public class BizContext {
     private static final ThreadLocal<Map<String, Object>> ctx = ThreadLocal.withInitial(HashMap::new);
 
 
-    // 类型 ...
-    protected static void setType(String type) {
-        setCtxVal(SYS_SCOPE, "__type__", type);
+    // 业务路由 ...
+    protected static void setBizRouter(BizRouter bizRouter) {
+        setCtxVal(SYS_SCOPE, "__biz_router__", bizRouter);
     }
 
-    public static String getType() {
-        return getCtxVal(SYS_SCOPE, "__type__");
+    public static BizRouter getBizRouter() {
+        return getCtxVal(SYS_SCOPE, "__biz_router__");
     }
-
 
     // 业务身份 ...
     protected static void setBizCode(String bizCode) {

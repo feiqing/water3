@@ -21,7 +21,7 @@ import static java.util.Optional.ofNullable;
  * @since 2023/8/11 19:38.
  */
 @Slf4j
-public class DomLoader {
+public class DomLoadUtils {
 
     private static final SAXReader saxReader = new SAXReader();
 
@@ -38,8 +38,7 @@ public class DomLoader {
                     throw new WaterException(String.format("Extension:[%s] is duplicated in file:[%s]", extension.clazz, file));
                 }
 
-                log.info("loaded Extension:[{}/{}] business:{}-router:{} from file:[{}].", extension.clazz, extension.desc, extension.businessList.size(),
-                        extension.routerList.size(), file);
+                log.info("loaded Extension:[{}/{}] business:{} from file:[{}].", extension.clazz, extension.desc, extension.businessList.size(), file);
             }
         }
 
@@ -62,14 +61,8 @@ public class DomLoader {
 
         Tag.Extension extension = new Tag.Extension(clazz, base);
         extension.businessList = new LinkedList<>();
-        extension.routerList = new LinkedList<>();
         for (Iterator<Element> iterator = element.elementIterator(); iterator.hasNext(); ) {
-            Element next = iterator.next();
-            if (StringUtils.equals(next.getName(), "Business")) {
-                extension.businessList.add(loadingBusiness(file, clazz, next));
-            } else {
-                extension.routerList.add(loadingRouter(file, clazz, next));
-            }
+            extension.businessList.add(loadingBusiness(file, clazz, iterator.next()));
         }
         extension.desc = element.attributeValue("desc");
 
@@ -127,17 +120,17 @@ public class DomLoader {
         return hsf;
     }
 
-    private static Tag.Router loadingRouter(String file, String path, Element element) {
-        String code = getAttrValNoneNull(element, file, path, "<Router/>", "code");
-        String type = getAttrValNoneNull(element, file, path, "<Router/>", "type");
-        String method = getAttrValNoneNull(element, file, path, "<Router/>", "method");
-
-        Tag.Router router = new Tag.Router(code, type, method);
-        router.desc = element.attributeValue("desc");
-        ofNullable(element.attributeValue("priority")).map(Integer::valueOf).ifPresent(priority -> router.priority = priority);
-
-        return router;
-    }
+//    private static Tag.Router loadingRouter(String file, String path, Element element) {
+//        String code = getAttrValNoneNull(element, file, path, "<Router/>", "code");
+//        String type = getAttrValNoneNull(element, file, path, "<Router/>", "type");
+//        String method = getAttrValNoneNull(element, file, path, "<Router/>", "method");
+//
+//        Tag.Router router = new Tag.Router(code, type, method);
+//        router.desc = element.attributeValue("desc");
+//        ofNullable(element.attributeValue("priority")).map(Integer::valueOf).ifPresent(priority -> router.priority = priority);
+//
+//        return router;
+//    }
 
     private static @Nonnull String getAttrValNoneNull(Element element, String file, String path, String tag, String attr) {
         String value = element.attributeValue(attr);

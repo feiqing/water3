@@ -1,7 +1,7 @@
 package com.alibaba.water3.core;
 
-import com.alibaba.water3.BizCodeParser;
 import com.alibaba.water3.BizContext;
+import com.alibaba.water3.BizRouter;
 import com.alibaba.water3.domain.Entity;
 import com.alibaba.water3.domain.SpiImpls;
 import com.alibaba.water3.domain.Tag;
@@ -9,21 +9,17 @@ import com.alibaba.water3.exception.WaterException;
 import com.alibaba.water3.factory.HsfServiceFactory;
 import com.alibaba.water3.factory.SpringBeanFactory;
 import com.alibaba.water3.plugin.ExtensionPlugin;
-import com.alibaba.water3.utils.DomLoader;
-import com.alibaba.water3.utils.EntityConvertor;
+import com.alibaba.water3.utils.DomLoadUtils;
+import com.alibaba.water3.utils.EntityConvertUtils;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Consumer;
 
-import static com.alibaba.water3.utils.AntMatchUtils.match;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -58,10 +54,9 @@ public class ExtensionManager {
         return plugins;
     }
 
-
     public static void register(String configStyle, Consumer<Set<Tag.Extension>> processor) throws Exception {
         // 1. 加载业务配置(目前只支持XML, 未来根据需要扩展更多的配置方式: yaml? json? groovy? java?)
-        Set<Tag.Extension> extensions = DomLoader.loadingConfigFiles(WATER_XML_CONFIG_LOCATION);
+        Set<Tag.Extension> extensions = DomLoadUtils.loadingConfigFiles(WATER_XML_CONFIG_LOCATION);
 
         // 2. 预留一个扩展接口, 可以注入外部的配置
         if (processor != null) {
@@ -69,66 +64,22 @@ public class ExtensionManager {
         }
 
         // 3. 将配置转换为实体
-        extensionMap = ImmutableMap.copyOf(EntityConvertor.toExtensionMap(extensions));
+        extensionMap = ImmutableMap.copyOf(EntityConvertUtils.toExtensionMap(extensions));
     }
 
     public static Map<Class<?>, Entity.Extension> getExtensionMap() {
         return extensionMap;
     }
 
-    protected static SpiImpls getSpiImpls(Class<?> spi, Object... args) throws Exception {
-
-        String type = BizContext.getType();
-        if (Strings.isNullOrEmpty(type)) {
-            throw new WaterException("[Type] can't be empty: please invoke Water3.parseBizCode(...) before.");
+    protected static SpiImpls getSpiImpls(Class<?> spi, Object... args) {
+        BizRouter bizRouter = BizContext.getBizRouter();
+        if (bizRouter == null) {
+            throw new WaterException("[BizRouter] can't be null: please invoke Water3.parseBizCode(...) before.");
         }
-
-        String bizCode = BizContext.getBizCode();
-        if (Strings.isNullOrEmpty(bizCode)) {
-            throw new WaterException("[BizCode] can't be empty: please invoke Water3.parseBizCode(...) before.");
-        }
-
-        if (StringUtils.equals(type, BizCodeParser.TYPE_ROUTER)) {
-            return invokeRouterImpls(bizCode, spi, args);
-        } else {
-            return getBusinessSpiImpls(bizCode, spi);
-        }
+        return bizRouter.route(spi, args);
     }
 
-    private static SpiImpls invokeRouterImpls(String bizCode, Class<?> spi, Object... args) throws InvocationTargetException, IllegalAccessException {
-        Entity.Extension extension = extensionMap.get(spi);
-        if (extension == null) {
-            throw new WaterException(String.format("ExtensionSpi:[%s] not found.", spi.getName()));
-        }
-
-        List<Entity.Router> routers = extension.ROUTER_CODE2ROUTER_CACHE.computeIfAbsent(bizCode, _K -> {
-            List<Entity.Router> _routers = new ArrayList<>(extension.routerList.size());
-            for (Entity.Router router : extension.routerList) {
-                if (match(router.code, bizCode)) {
-                    _routers.add(router);
-                }
-            }
-            // tips: match后重新基于优先级排序
-            _routers.sort(Comparator.comparing(router -> router.priority));
-            return _routers;
-        });
-
-        SpiImpls implList = new SpiImpls();
-        for (Entity.Router router : routers) {
-            SpiImpls impls = (SpiImpls) router.method.invoke(router.instance, args);
-            if (!CollectionUtils.isEmpty(impls)) {
-                implList.addAll(impls);
-            }
-        }
-
-        if (implList.isEmpty()) {
-            return new SpiImpls(Collections.singletonList(new SpiImpls.SpiImpl("base", extension.base)));
-        }
-
-        return implList;
-    }
-
-    public static SpiImpls getBusinessSpiImpls(String bizCode, Class<?> spi) {
+    public static SpiImpls getBusinessSpiImpls(Class<?> spi, String bizCode) {
         Entity.Extension extension = extensionMap.get(spi);
         if (extension == null) {
             throw new WaterException(String.format("ExtensionSpi:[%s] not found.", spi.getName()));
@@ -165,4 +116,37 @@ public class ExtensionManager {
 
         return new SpiImpls.SpiImpl(entity.type, entity.instance);
     }
+
+    //    private static SpiImpls invokeRouterImpls(String bizCode, Class<?> spi, Object... args) throws InvocationTargetException, IllegalAccessException {
+//        Entity.Extension extension = extensionMap.get(spi);
+//        if (extension == null) {
+//            throw new WaterException(String.format("ExtensionSpi:[%s] not found.", spi.getName()));
+//        }
+//
+//        List<Entity.Router> routers = extension.ROUTER_CODE2ROUTER_CACHE.computeIfAbsent(bizCode, _K -> {
+//            List<Entity.Router> _routers = new ArrayList<>(extension.routerList.size());
+//            for (Entity.Router router : extension.routerList) {
+//                if (match(router.code, bizCode)) {
+//                    _routers.add(router);
+//                }
+//            }
+//            // tips: match后重新基于优先级排序
+//            _routers.sort(Comparator.comparing(router -> router.priority));
+//            return _routers;
+//        });
+//
+//        SpiImpls implList = new SpiImpls();
+//        for (Entity.Router router : routers) {
+//            SpiImpls impls = (SpiImpls) router.method.invoke(router.instance, args);
+//            if (!CollectionUtils.isEmpty(impls)) {
+//                implList.addAll(impls);
+//            }
+//        }
+//
+//        if (implList.isEmpty()) {
+//            return new SpiImpls(Collections.singletonList(new SpiImpls.SpiImpl("base", extension.base)));
+//        }
+//
+//        return implList;
+//    }
 }

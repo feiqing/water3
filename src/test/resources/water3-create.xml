@@ -10,9 +10,6 @@
         <Business code="6, 8" type="bean" desc="验货宝" priority="0">
             <bean name="com.alibaba.water3.function.YhbFunction#0" lazy="true"/>
         </Business>
-        <Router code="/xxxx/8888" type="@bean('com.alibaba.water3.function.YhbFunction#0')" method="taiSbLe" desc=""/>
-        <Router code="/xxxx/000" type="@class('com.alibaba.water3.function.YhbFunction')" method="taiSbLe"/>
-        <Router code="/xxxx/000" type="@instance('com.alibaba.water3.function.YhbFunction')" method="taiSbLe"/>
     </Extension>
 
     <Extension class="java.util.function.Supplier" base="baseSupplier" desc="测试扩展能力2">
@@ -29,8 +26,6 @@
         <Business code="yhb" type="hsf" desc="验货宝">
             <hsf service="xxx" group="xxx" version="xxx.yhb" lazy="true"/>
         </Business>
-
-        <Router code="base**" type="@bean('com.alibaba.water3.function.YhbFunction#0')" method="taiSbLe" desc=""/>
     </Extension>
 
 </Extensions>

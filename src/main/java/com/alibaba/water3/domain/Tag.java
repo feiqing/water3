@@ -22,8 +22,6 @@ public class Tag {
 
         public List<Business> businessList;
 
-        public List<Router> routerList;
-
         public Extension(String clazz, String base) {
             this.clazz = clazz;
             this.base = base;
@@ -99,26 +97,4 @@ public class Tag {
             this.version = version;
         }
     }
-
-    public static class Router implements Serializable {
-
-        private static final long serialVersionUID = -253145366338161711L;
-
-        public final String code;
-
-        public final String type;
-
-        public final String method;
-
-        public String desc;
-
-        public int priority = 0;
-
-        public Router(String code, String type, String method) {
-            this.code = code;
-            this.type = type;
-            this.method = method;
-        }
-    }
-
 }

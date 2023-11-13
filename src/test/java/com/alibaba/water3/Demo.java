@@ -21,11 +21,6 @@ public class Demo {
     public static class DemoBizCodeParser implements BizCodeParser<String[]> {
 
         @Override
-        public String type(String[] s) {
-            return "AT";
-        }
-
-        @Override
         public String parseBizCode(String[] s) {
             return s[0];
         }
