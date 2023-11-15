@@ -76,7 +76,11 @@ public class ExtensionManager {
         if (bizRouter == null) {
             throw new WaterException("[BizRouter] can't be null: please invoke Water3.parseBizCode(...) before.");
         }
-        return bizRouter.route(spi, args);
+        SpiImpls impls = bizRouter.route(spi, args);
+        if (CollectionUtils.isEmpty(impls)) {
+            throw new WaterException(String.format("[BizRouter] '%s' [Spi] '%s' route return empty impls !", bizRouter, spi));
+        }
+        return impls;
     }
 
     public static SpiImpls getBusinessSpiImpls(Class<?> spi, String bizCode) {
