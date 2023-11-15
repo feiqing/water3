@@ -26,9 +26,10 @@ public class ExtensionLoggingPlugin implements ExtensionPlugin {
             throw t;
         } finally {
             long rt = System.currentTimeMillis() - start;
-            logger.info("{}|{}|{}|{}|{}|{}|{}|{}|",
+            logger.info("{}|{}|{}|{}|{}|{}|{}|{}|{}|",
                     invocation.getExtensionSpi().getName(),
                     invocation.getExtensionMethod().getName(),
+                    BizContext.getBizRouter().getClass().getSimpleName(),
                     BizContext.getBizCode(),
                     invocation.getType(),
                     invocation.getInstance(),

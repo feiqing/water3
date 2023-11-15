@@ -11,7 +11,7 @@ import com.google.common.base.Strings;
  * @version 1.0
  * @since 2023/11/13 10:48.
  */
-public class BusinessRouter implements BizRouter {
+public class BaseBizRouter implements BizRouter {
 
     @Override
     public SpiImpls route(Class<?> spi, Object[] args) {

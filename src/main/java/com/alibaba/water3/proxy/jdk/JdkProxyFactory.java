@@ -11,24 +11,20 @@ import java.lang.reflect.Proxy;
  * @version 1.0
  * @since 2023/8/11 22:49.
  */
-public class JdkProxyFactory {
+public class JdkProxyFactory<SPI> implements InvocationHandler {
 
-    public static <SPI> Object newProxy(Class<SPI> spi) {
-        return Proxy.newProxyInstance(spi.getClassLoader(), new Class[]{spi}, new JdkInvocationHandler<>(spi));
+    private final Class<SPI> spi;
 
+    private JdkProxyFactory(Class<SPI> spi) {
+        this.spi = spi;
     }
 
-    private static class JdkInvocationHandler<SPI> implements InvocationHandler {
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        return ExtensionExecutor._execute(spi, method, args);
+    }
 
-        private final Class<SPI> spi;
-
-        public JdkInvocationHandler(Class<SPI> spi) {
-            this.spi = spi;
-        }
-
-        @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            return ExtensionExecutor._execute(spi, method, args);
-        }
+    public static <SPI> Object newProxy(Class<SPI> spi) {
+        return Proxy.newProxyInstance(spi.getClassLoader(), new Class[]{spi}, new JdkProxyFactory<>(spi));
     }
 }

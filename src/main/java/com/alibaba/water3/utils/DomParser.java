@@ -21,7 +21,7 @@ import static java.util.Optional.ofNullable;
  * @since 2023/8/11 19:38.
  */
 @Slf4j
-public class DomLoadUtils {
+public class DomParser {
 
     private static final SAXReader saxReader = new SAXReader();
 
@@ -31,7 +31,7 @@ public class DomLoadUtils {
 
         for (Resource resource : resources) {
             String file = resource.getFilename();
-            List<Tag.Extension> extensions = loadingFileExtensions(file, saxReader.read(resource.getInputStream()).getRootElement());
+            List<Tag.Extension> extensions = loadingExtensions(file, saxReader.read(resource.getInputStream()).getRootElement());
 
             for (Tag.Extension extension : extensions) {
                 if (!allExtensions.add(extension)) {
@@ -45,7 +45,7 @@ public class DomLoadUtils {
         return allExtensions;
     }
 
-    private static List<Tag.Extension> loadingFileExtensions(String file, Element document) {
+    private static List<Tag.Extension> loadingExtensions(String file, Element document) {
 
         List<Tag.Extension> extensions = new LinkedList<>();
         for (Iterator<Element> iterator = document.elementIterator(); iterator.hasNext(); ) {
@@ -119,18 +119,6 @@ public class DomLoadUtils {
 
         return hsf;
     }
-
-//    private static Tag.Router loadingRouter(String file, String path, Element element) {
-//        String code = getAttrValNoneNull(element, file, path, "<Router/>", "code");
-//        String type = getAttrValNoneNull(element, file, path, "<Router/>", "type");
-//        String method = getAttrValNoneNull(element, file, path, "<Router/>", "method");
-//
-//        Tag.Router router = new Tag.Router(code, type, method);
-//        router.desc = element.attributeValue("desc");
-//        ofNullable(element.attributeValue("priority")).map(Integer::valueOf).ifPresent(priority -> router.priority = priority);
-//
-//        return router;
-//    }
 
     private static @Nonnull String getAttrValNoneNull(Element element, String file, String path, String tag, String attr) {
         String value = element.attributeValue(attr);

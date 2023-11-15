@@ -16,7 +16,7 @@ import java.util.*;
  * @since 2023/8/16 20:45.
  */
 @Slf4j
-public class EntityConvertUtils {
+public class EntityConvertor {
 
     public static Map<Class<?>, Entity.Extension> toExtensionMap(Collection<Tag.Extension> extensionTags) throws Exception {
         Map<Class<?>, Entity.Extension> extensionMap = new HashMap<>(extensionTags.size());
@@ -71,11 +71,11 @@ public class EntityConvertUtils {
     }
 
     private static Object getSpringBean(Tag.Bean bean) {
-        if (SystemUtils.isGlobalCloseLazyLoading()) {
+        if (SystemConfig.isGlobalCloseLazyLoading()) {
             return SpringBeanFactory.getSpringBean(bean);
         }
 
-        if (SystemUtils.isGlobalOpenLazyLoading()) {
+        if (SystemConfig.isGlobalOpenLazyLoading()) {
             return null;
         }
 
@@ -87,11 +87,11 @@ public class EntityConvertUtils {
     }
 
     private static Object getHsfService(Tag.Hsf hsf) throws Exception {
-        if (SystemUtils.isGlobalCloseLazyLoading()) {
+        if (SystemConfig.isGlobalCloseLazyLoading()) {
             return HsfServiceFactory.getHsfService(hsf);
         }
 
-        if (SystemUtils.isGlobalOpenLazyLoading()) {
+        if (SystemConfig.isGlobalOpenLazyLoading()) {
             return null;
         }
 

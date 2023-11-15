@@ -9,8 +9,8 @@ import com.alibaba.water3.exception.WaterException;
 import com.alibaba.water3.factory.HsfServiceFactory;
 import com.alibaba.water3.factory.SpringBeanFactory;
 import com.alibaba.water3.plugin.ExtensionPlugin;
-import com.alibaba.water3.utils.DomLoadUtils;
-import com.alibaba.water3.utils.EntityConvertUtils;
+import com.alibaba.water3.utils.DomParser;
+import com.alibaba.water3.utils.EntityConvertor;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
@@ -56,7 +56,7 @@ public class ExtensionManager {
 
     public static void register(String configStyle, Consumer<Set<Tag.Extension>> processor) throws Exception {
         // 1. 加载业务配置(目前只支持XML, 未来根据需要扩展更多的配置方式: yaml? json? groovy? java?)
-        Set<Tag.Extension> extensions = DomLoadUtils.loadingConfigFiles(WATER_XML_CONFIG_LOCATION);
+        Set<Tag.Extension> extensions = DomParser.loadingConfigFiles(WATER_XML_CONFIG_LOCATION);
 
         // 2. 预留一个扩展接口, 可以注入外部的配置
         if (processor != null) {
@@ -64,7 +64,7 @@ public class ExtensionManager {
         }
 
         // 3. 将配置转换为实体
-        extensionMap = ImmutableMap.copyOf(EntityConvertUtils.toExtensionMap(extensions));
+        extensionMap = ImmutableMap.copyOf(EntityConvertor.toExtensionMap(extensions));
     }
 
     public static Map<Class<?>, Entity.Extension> getExtensionMap() {

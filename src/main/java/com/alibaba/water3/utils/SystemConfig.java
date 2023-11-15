@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
  * @version 1.0
  * @since 2023/8/11 21:07.
  */
-public class SystemUtils {
+public class SystemConfig {
 
     // todo: 优化取名
     public static boolean isGlobalCloseLazyLoading() {

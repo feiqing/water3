@@ -1,6 +1,6 @@
 package com.alibaba.water3;
 
-import com.alibaba.water3.core.BusinessRouter;
+import com.alibaba.water3.core.BaseBizRouter;
 
 /**
  * @author jifang.zjf@alibaba-inc.com (FeiQing)
@@ -10,10 +10,10 @@ import com.alibaba.water3.core.BusinessRouter;
 @FunctionalInterface
 public interface BizCodeParser<Param> {
 
-    BusinessRouter BUSINESS_ROUTER = new BusinessRouter();
+    BizRouter BASE_BIZ_ROUTER = new BaseBizRouter();
 
     default BizRouter getBizRouter(Param param) {
-        return BUSINESS_ROUTER;
+        return BASE_BIZ_ROUTER;
     }
 
     String parseBizCode(Param param);
