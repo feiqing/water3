@@ -35,10 +35,12 @@ public final class Water3 {
 
     public static <SPI, T, R> R execute(Class<SPI> spi, BizExtensionInvoker<SPI, T> invoker, Reducer<T, R> reducer) {
         BizContext.setSpi(spi);
+        BizContext.addBusinessExt("__caller__","execute");
         try {
             return ExtensionExecutor.execute(spi, invoker, reducer);
         } finally {
             BizContext.removeSpi();
+            BizContext.removeBusinessExt("__caller__");
         }
     }
 
@@ -48,10 +50,12 @@ public final class Water3 {
 
     public static <SPI, T, R> R extExecute(Class<SPI> spi, Function<SpiImpls.SpiImpl, List<Method>> methods, Reducer<T, R> reducer, Object... args) {
         BizContext.setSpi(spi);
+        BizContext.addBusinessExt("__caller__","extExecute");
         try {
             return ExtensionExecutor.extExecute(spi, methods, reducer, args);
         } finally {
             BizContext.removeSpi();
+            BizContext.removeBusinessExt("__caller__");
         }
     }
 
