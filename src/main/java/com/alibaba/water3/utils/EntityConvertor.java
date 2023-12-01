@@ -25,7 +25,10 @@ public class EntityConvertor {
 
             Map<String, List<Entity.Business>> businessMap = toBusinessMap(extensionTag.businessList);
 
-            extensionMap.put(Class.forName(extensionTag.clazz), new Entity.Extension(extensionTag.clazz, base, businessMap));
+            Entity.Extension extension = new Entity.Extension(extensionTag.clazz, base, businessMap);
+            extension.domain = extensionTag.domain;
+
+            extensionMap.put(Class.forName(extensionTag.clazz), extension);
         }
 
         return extensionMap;

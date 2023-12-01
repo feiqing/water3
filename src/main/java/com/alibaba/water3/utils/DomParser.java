@@ -65,8 +65,13 @@ public class DomParser {
             extension.businessList.add(loadingBusiness(file, clazz, iterator.next()));
         }
         extension.desc = element.attributeValue("desc");
+        extension.domain = parseDomain(file);
 
         return extension;
+    }
+
+    private static String parseDomain(String file) {
+        return StringUtils.upperCase(StringUtils.substringAfter(StringUtils.substringBefore(file, ".xml"), "water3-"));
     }
 
     private static Tag.Business loadingBusiness(String file, String path, Element element) {

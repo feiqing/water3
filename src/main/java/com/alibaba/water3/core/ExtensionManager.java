@@ -30,7 +30,7 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 public class ExtensionManager {
 
-    private static final String WATER_XML_CONFIG_LOCATION = "classpath*:water3*.xml";
+    private static final String WATER_XML_CONFIG_LOCATION = "classpath*:water3-*.xml";
 
     private static Map<Class<?>, Entity.Extension> extensionMap;
 
@@ -76,6 +76,13 @@ public class ExtensionManager {
         if (bizRouter == null) {
             throw new WaterException("[BizRouter] can't be null: please invoke Water3.parseBizCode(...) before.");
         }
+
+        Entity.Extension extension = extensionMap.get(spi);
+        if (extension == null) {
+            throw new WaterException(String.format("ExtensionSpi:[%s] not found.", spi.getName()));
+        }
+        BizContext.addBusinessExt("__domain__", extension.domain);
+
         SpiImpls impls = bizRouter.route(spi, args);
         if (CollectionUtils.isEmpty(impls)) {
             throw new WaterException(String.format("[BizRouter] '%s' [Spi] '%s' route return empty impls !", bizRouter, spi));
@@ -85,9 +92,7 @@ public class ExtensionManager {
 
     public static SpiImpls getBusinessSpiImpls(Class<?> spi, String bizCode) {
         Entity.Extension extension = extensionMap.get(spi);
-        if (extension == null) {
-            throw new WaterException(String.format("ExtensionSpi:[%s] not found.", spi.getName()));
-        }
+        Preconditions.checkState(extension != null);
 
         return extension.BUSINESS_CODE2IMPL_CACHE.computeIfAbsent(bizCode, _K -> {
             List<Entity.Business> business = extension.businessMap.get(bizCode);

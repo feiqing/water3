@@ -18,6 +18,8 @@ public class Entity {
 
     public static class Extension {
 
+        public String domain;
+
         @Nonnull
         public final String clazz;
 
