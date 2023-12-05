@@ -26,19 +26,34 @@ public class ExtensionLoggingPlugin implements ExtensionPlugin {
             throw t;
         } finally {
             long rt = System.currentTimeMillis() - start;
-            logger.info("{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|",
-                    BizContext.getBusinessExt("__domain__"),
-                    invocation.getExtensionSpi().getName(),
-                    invocation.getExtensionMethod().getName(),
-                    BizContext.getBizRouter().getClass().getSimpleName(),
-                    BizContext.getBizCode(),
-                    invocation.getType(),
-                    invocation.getInstance(),
-                    getArgs(args),
-                    getResult(result),
-                    rt,
-                    except
-            );
+            if (except == null) {
+                logger.info("{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|",
+                        BizContext.getBusinessExt("__domain__"),
+                        invocation.getExtensionSpi().getName(),
+                        invocation.getExtensionMethod().getName(),
+                        BizContext.getBizRouter().getClass().getSimpleName(),
+                        BizContext.getBizCode(),
+                        invocation.getType(),
+                        invocation.getInstance(),
+                        getArgs(args),
+                        getResult(result),
+                        rt
+                );
+            } else {
+                logger.error("{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|",
+                        BizContext.getBusinessExt("__domain__"),
+                        invocation.getExtensionSpi().getName(),
+                        invocation.getExtensionMethod().getName(),
+                        BizContext.getBizRouter().getClass().getSimpleName(),
+                        BizContext.getBizCode(),
+                        invocation.getType(),
+                        invocation.getInstance(),
+                        getArgs(args),
+                        getResult(result),
+                        rt,
+                        except
+                );
+            }
         }
     }
 
