@@ -16,6 +16,13 @@ public class ExtensionLoggingPlugin implements ExtensionPlugin {
     @Override
     public Object invoke(ExtensionInvocation invocation) throws Exception {
         long start = System.currentTimeMillis();
+        String domain = BizContext.getBusinessExt("__domain__");
+        String spi = invocation.getExtensionSpi().getName();
+        String method = invocation.getExtensionMethod().getName();
+        String router = BizContext.getBizRouter().getClass().getSimpleName();
+        String bizCode = BizContext.getBizCode();
+        String type = invocation.getType();
+        Object instance = invocation.getInstance();
         Object[] args = invocation.getArgs();
         Object result = null;
         Throwable except = null;
@@ -27,32 +34,10 @@ public class ExtensionLoggingPlugin implements ExtensionPlugin {
         } finally {
             long rt = System.currentTimeMillis() - start;
             if (except == null) {
-                logger.info("{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|",
-                        BizContext.getBusinessExt("__domain__"),
-                        invocation.getExtensionSpi().getName(),
-                        invocation.getExtensionMethod().getName(),
-                        BizContext.getBizRouter().getClass().getSimpleName(),
-                        BizContext.getBizCode(),
-                        invocation.getType(),
-                        invocation.getInstance(),
-                        getArgs(args),
-                        getResult(result),
-                        rt
-                );
+                logger.info("{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|", domain, spi, method, router, bizCode, type, instance, getArgs(args), getResult(result), rt);
             } else {
-                logger.error("{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|",
-                        BizContext.getBusinessExt("__domain__"),
-                        invocation.getExtensionSpi().getName(),
-                        invocation.getExtensionMethod().getName(),
-                        BizContext.getBizRouter().getClass().getSimpleName(),
-                        BizContext.getBizCode(),
-                        invocation.getType(),
-                        invocation.getInstance(),
-                        getArgs(args),
-                        getResult(result),
-                        rt,
-                        except
-                );
+                logger.error("{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|", domain, spi, method, router, bizCode, type, instance, getArgs(args), getResult(result), rt,
+                        except);
             }
         }
     }
