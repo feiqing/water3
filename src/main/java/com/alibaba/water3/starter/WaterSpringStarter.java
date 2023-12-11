@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
  * @since 2023/8/11 23:13.
  */
 @Configuration
-public class WaterSpringStater implements InitializingBean, ApplicationContextAware {
+public class WaterSpringStarter implements InitializingBean, ApplicationContextAware {
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
