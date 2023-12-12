@@ -14,7 +14,7 @@ public class Tag {
 
         private static final long serialVersionUID = 6557095413659207121L;
 
-        public String domain;
+        public String group;
 
         public String clazz;
 

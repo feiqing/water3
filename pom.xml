@@ -6,7 +6,7 @@
 
     <groupId>com.alibaba.water3</groupId>
     <artifactId>water3</artifactId>
-    <version>0.2.3.1-SNAPSHOT</version>
+    <version>0.2.3.2-SNAPSHOT</version>
 
     <properties>
     </properties>

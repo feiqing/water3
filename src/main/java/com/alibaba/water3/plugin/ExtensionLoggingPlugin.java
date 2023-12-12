@@ -16,7 +16,7 @@ public class ExtensionLoggingPlugin implements ExtensionPlugin {
     @Override
     public Object invoke(ExtensionInvocation invocation) throws Exception {
         long start = System.currentTimeMillis();
-        String domain = BizContext.getBusinessExt("__domain__");
+        String domain = BizContext.getBusinessExt("__group__");
         String spi = invocation.getExtensionSpi().getName();
         String method = invocation.getExtensionMethod().getName();
         String router = BizContext.getBizRouter().getClass().getSimpleName();

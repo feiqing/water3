@@ -81,7 +81,7 @@ public class ExtensionManager {
         if (extension == null) {
             throw new WaterException(String.format("ExtensionSpi:[%s] not found.", spi.getName()));
         }
-        BizContext.addBusinessExt("__domain__", extension.domain);
+        BizContext.addBusinessExt("__group__", extension.group);
 
         SpiImpls impls = bizRouter.route(spi, args);
         if (CollectionUtils.isEmpty(impls)) {

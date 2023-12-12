@@ -18,7 +18,7 @@ public class Entity {
 
     public static class Extension {
 
-        public String domain;
+        public String group;
 
         @Nonnull
         public final String clazz;
