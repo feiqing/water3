@@ -74,13 +74,13 @@ public class EntityConvertor {
     }
 
     private static Object getSpringBean(Tag.Bean bean) {
-        if (SystemConfig.isGlobalCloseLazyLoading()) {
-            return SpringBeanFactory.getSpringBean(bean);
-        }
-
-        if (SystemConfig.isGlobalOpenLazyLoading()) {
-            return null;
-        }
+//        if (SystemConfig.isGlobalCloseLazyLoading()) {
+//            return SpringBeanFactory.getSpringBean(bean);
+//        }
+//
+//        if (SystemConfig.isGlobalOpenLazyLoading()) {
+//            return null;
+//        }
 
         if (!bean.lazy) {
             return SpringBeanFactory.getSpringBean(bean);
@@ -90,13 +90,13 @@ public class EntityConvertor {
     }
 
     private static Object getHsfService(Tag.Hsf hsf) throws Exception {
-        if (SystemConfig.isGlobalCloseLazyLoading()) {
-            return HsfServiceFactory.getHsfService(hsf);
-        }
-
-        if (SystemConfig.isGlobalOpenLazyLoading()) {
-            return null;
-        }
+//        if (SystemConfig.isGlobalCloseLazyLoading()) {
+//            return HsfServiceFactory.getHsfService(hsf);
+//        }
+//
+//        if (SystemConfig.isGlobalOpenLazyLoading()) {
+//            return null;
+//        }
 
         if (!hsf.lazy) {
             return HsfServiceFactory.getHsfService(hsf);
