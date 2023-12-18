@@ -16,7 +16,7 @@ public class ExtensionLoggingPlugin implements ExtensionPlugin {
     @Override
     public Object invoke(ExtensionInvocation invocation) throws Exception {
         long start = System.currentTimeMillis();
-        String domain = BizContext.getBusinessExt("__group__");
+        String group = BizContext.getBusinessExt("__group__");
         String spi = invocation.getExtensionSpi().getName();
         String method = invocation.getExtensionMethod().getName();
         String router = BizContext.getBizRouter().getClass().getSimpleName();
@@ -34,9 +34,9 @@ public class ExtensionLoggingPlugin implements ExtensionPlugin {
         } finally {
             long rt = System.currentTimeMillis() - start;
             if (except == null) {
-                logger.info("{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|", domain, spi, method, router, bizCode, type, instance, getArgs(args), getResult(result), rt);
+                logger.info("{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|", group, spi, method, router, bizCode, type, instance, getArgs(args), getResult(result), rt);
             } else {
-                logger.error("{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|", domain, spi, method, router, bizCode, type, instance, getArgs(args), getResult(result), rt,
+                logger.error("{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|", group, spi, method, router, bizCode, type, instance, getArgs(args), getResult(result), rt,
                         except);
             }
         }

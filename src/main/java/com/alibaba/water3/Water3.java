@@ -16,6 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 
+import static com.alibaba.water3.BizCodeParser.BASE_BIZ_ROUTER;
+
 /**
  * @author jifang.zjf@alibaba-inc.com (FeiQing)
  * @version 1.0
@@ -35,12 +37,35 @@ public final class Water3 {
 
     public static <SPI, T, R> R execute(Class<SPI> spi, BizExtensionInvoker<SPI, T> invoker, Reducer<T, R> reducer) {
         BizContext.setSpi(spi);
-        BizContext.addBusinessExt("__caller__","execute");
+        BizContext.addBusinessExt("__caller__", "execute");
         try {
             return ExtensionExecutor.execute(spi, invoker, reducer);
         } finally {
             BizContext.removeSpi();
             BizContext.removeBusinessExt("__caller__");
+        }
+    }
+
+    public static <SPI, R> R execute(String bizCode, Class<SPI> spi, BizExtensionInvoker<SPI, R> invoker) {
+        return execute(bizCode, BASE_BIZ_ROUTER, spi, invoker, Reducers.firstOf());
+    }
+
+    public static <SPI, T, R> R execute(String bizCode, Class<SPI> spi, BizExtensionInvoker<SPI, T> invoker, Reducer<T, R> reducer) {
+        return execute(bizCode, BASE_BIZ_ROUTER, spi, invoker, reducer);
+    }
+
+    public static <SPI, T, R> R execute(String bizCode, BizRouter bizRouter, Class<SPI> spi, BizExtensionInvoker<SPI, T> invoker, Reducer<T, R> reducer) {
+        BizContext.setBizCode(bizCode);
+        BizContext.setBizRouter(bizRouter);
+        BizContext.setSpi(spi);
+        BizContext.addBusinessExt("__caller__", "execute");
+        try {
+            return ExtensionExecutor.execute(spi, invoker, reducer);
+        } finally {
+            BizContext.removeSpi();
+            BizContext.removeBusinessExt("__caller__");
+            BizContext.removeBizRouter();
+            BizContext.removeBizCode();
         }
     }
 
@@ -50,7 +75,7 @@ public final class Water3 {
 
     public static <SPI, T, R> R extExecute(Class<SPI> spi, Function<SpiImpls.SpiImpl, List<Method>> methods, Reducer<T, R> reducer, Object... args) {
         BizContext.setSpi(spi);
-        BizContext.addBusinessExt("__caller__","extExecute");
+        BizContext.addBusinessExt("__caller__", "extExecute");
         try {
             return ExtensionExecutor.extExecute(spi, methods, reducer, args);
         } finally {

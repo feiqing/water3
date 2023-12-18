@@ -27,6 +27,10 @@ public class BizContext {
         return getCtxVal(SYS_SCOPE, "__biz_router__");
     }
 
+    public static void removeBizRouter() {
+        ctx.get().remove(SYS_SCOPE + ":" + "__biz_router__");
+    }
+
     // 业务身份 ...
     protected static void setBizCode(String bizCode) {
         setCtxVal(SYS_SCOPE, "__biz_code__", bizCode);
@@ -34,6 +38,10 @@ public class BizContext {
 
     public static String getBizCode() {
         return getCtxVal(SYS_SCOPE, "__biz_code__");
+    }
+
+    public static void removeBizCode() {
+        ctx.get().remove(SYS_SCOPE + ":" + "__biz_code__");
     }
 
     // Spi ...
@@ -46,7 +54,7 @@ public class BizContext {
     }
 
     public static void removeSpi() {
-        ctx.get().get(SYS_SCOPE + ":" + "__spi__");
+        ctx.get().remove(SYS_SCOPE + ":" + "__spi__");
     }
 
     // 业务扩展 ...
