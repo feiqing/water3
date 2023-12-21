@@ -1,5 +1,6 @@
 package com.alibaba.water3.core;
 
+import com.alibaba.water3.BizContext;
 import com.alibaba.water3.BizExtensionInvoker;
 import com.alibaba.water3.domain.SpiImpls;
 import com.alibaba.water3.exception.WaterException;
@@ -18,6 +19,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import static com.alibaba.water3.core.ExtensionManager.getPlugins;
+import static com.alibaba.water3.utils.SysNamespace.METHOD;
 
 /**
  * @author jifang.zjf@alibaba-inc.com (FeiQing)
@@ -57,22 +59,27 @@ public class ExtensionExecutor {
             throw new WaterException(String.format("ExtensionSpi:[%s] is not interface.", spi));
         }
 
-        Reducer reducer = Optional.ofNullable(reducerCtx.get()).orElse((Reducer) Reducers.firstOf());
+        try {
+            BizContext.addBusinessExt(METHOD, method.getName());
+            Reducer reducer = Optional.ofNullable(reducerCtx.get()).orElse((Reducer) Reducers.firstOf());
 
-        SpiImpls impls = ExtensionManager.getSpiImpls(spi, args);
-        List<Object> rs = new ArrayList<>(impls.size());
+            SpiImpls impls = ExtensionManager.getSpiImpls(spi, args);
+            List<Object> rs = new ArrayList<>(impls.size());
 
-        for (SpiImpls.SpiImpl impl : impls) {
-            Object r = invoke(spi, impl, method, args);
-            rs.add(r);
-            if (reducer.willBreak(r)) {
-                break;
+            for (SpiImpls.SpiImpl impl : impls) {
+                Object r = invoke(spi, impl, method, args);
+                rs.add(r);
+                if (reducer.willBreak(r)) {
+                    break;
+                }
             }
-        }
 
-        // 防止类转换异常, 强制返回null, result通过线程上下文返回
-        resultCtx.set(reducer.reduce(rs));
-        return null;
+            // 防止类转换异常, 强制返回null, result通过线程上下文返回
+            resultCtx.set(reducer.reduce(rs));
+            return null;
+        } finally {
+            BizContext.removeBusinessExt(METHOD);
+        }
     }
 
     public static <SPI, T, R> R extExecute(Class<SPI> spi, Function<SpiImpls.SpiImpl, List<Method>> methods, Reducer<T, R> reducer, Object[] args) {

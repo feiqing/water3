@@ -20,6 +20,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 import java.util.function.Consumer;
 
+import static com.alibaba.water3.utils.SysNamespace.GROUP;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -81,7 +82,7 @@ public class ExtensionManager {
         if (extension == null) {
             throw new WaterException(String.format("ExtensionSpi:[%s] not found.", spi.getName()));
         }
-        BizContext.addBusinessExt("__group__", extension.group);
+        BizContext.addBusinessExt(GROUP, extension.group);
 
         SpiImpls impls = bizRouter.route(spi, args);
         if (CollectionUtils.isEmpty(impls)) {

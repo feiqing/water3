@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 
 import static com.alibaba.water3.BizCodeParser.BASE_BIZ_ROUTER;
+import static com.alibaba.water3.utils.SysNamespace.CALLER;
 
 /**
  * @author jifang.zjf@alibaba-inc.com (FeiQing)
@@ -37,12 +38,12 @@ public final class Water3 {
 
     public static <SPI, T, R> R execute(Class<SPI> spi, BizExtensionInvoker<SPI, T> invoker, Reducer<T, R> reducer) {
         BizContext.setSpi(spi);
-        BizContext.addBusinessExt("__caller__", "execute");
+        BizContext.addBusinessExt(CALLER, "execute");
         try {
             return ExtensionExecutor.execute(spi, invoker, reducer);
         } finally {
             BizContext.removeSpi();
-            BizContext.removeBusinessExt("__caller__");
+            BizContext.removeBusinessExt(CALLER);
         }
     }
 
@@ -58,12 +59,12 @@ public final class Water3 {
         BizContext.setBizCode(bizCode);
         BizContext.setBizRouter(bizRouter);
         BizContext.setSpi(spi);
-        BizContext.addBusinessExt("__caller__", "execute");
+        BizContext.addBusinessExt(CALLER, "execute");
         try {
             return ExtensionExecutor.execute(spi, invoker, reducer);
         } finally {
             BizContext.removeSpi();
-            BizContext.removeBusinessExt("__caller__");
+            BizContext.removeBusinessExt(CALLER);
             BizContext.removeBizRouter();
             BizContext.removeBizCode();
         }
@@ -75,12 +76,12 @@ public final class Water3 {
 
     public static <SPI, T, R> R extExecute(Class<SPI> spi, Function<SpiImpls.SpiImpl, List<Method>> methods, Reducer<T, R> reducer, Object... args) {
         BizContext.setSpi(spi);
-        BizContext.addBusinessExt("__caller__", "extExecute");
+        BizContext.addBusinessExt(CALLER, "extExecute");
         try {
             return ExtensionExecutor.extExecute(spi, methods, reducer, args);
         } finally {
             BizContext.removeSpi();
-            BizContext.removeBusinessExt("__caller__");
+            BizContext.removeBusinessExt(CALLER);
         }
     }
 
