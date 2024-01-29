@@ -9,6 +9,8 @@ public interface SysNamespace {
 
     String GROUP = "__group__";
 
+    String SPI = "__spi__";
+
     String METHOD = "__method__";
 
     String CALLER = "__caller__";

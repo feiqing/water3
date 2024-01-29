@@ -20,6 +20,8 @@ public class Tag {
 
         public String base;
 
+        public boolean proxy;
+
         public String desc;
 
         public List<Business> businessList;

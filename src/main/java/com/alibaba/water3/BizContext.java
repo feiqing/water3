@@ -44,19 +44,6 @@ public class BizContext {
         ctx.get().remove(SYS_SCOPE + ":" + "__biz_code__");
     }
 
-    // Spi ...
-    protected static void setSpi(Class<?> spi) {
-        setCtxVal(SYS_SCOPE, "__spi__", spi);
-    }
-
-    public static Class<?> getSpi() {
-        return getCtxVal(SYS_SCOPE, "__spi__");
-    }
-
-    public static void removeSpi() {
-        ctx.get().remove(SYS_SCOPE + ":" + "__spi__");
-    }
-
     // 业务扩展 ...
     public static <Ext> void addBusinessExt(String namespace, Ext ext) {
         setCtxVal(EXT_SCOPE, namespace, ext);

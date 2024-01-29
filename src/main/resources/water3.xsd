@@ -36,6 +36,11 @@
                 <xsd:documentation>SPI默认实现: 必填、值为spring bean name(当基于业务身份找不到具体路由时, 会自动调用默认实现)</xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>
+        <xsd:attribute name="proxy" type="xsd:string" use="optional" default="false">
+            <xsd:annotation>
+                <xsd:documentation>是否注册SPI的proxy到spring context中: 选填、可以使用@Resource/@Autowired注解引用该SPI实现</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
         <xsd:attribute name="desc" type="xsd:string" use="optional">
             <xsd:annotation>
                 <xsd:documentation>SPI描述</xsd:documentation>

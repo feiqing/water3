@@ -7,18 +7,22 @@ import com.alibaba.water3.exception.WaterException;
 import com.alibaba.water3.plugin.ExtensionInvocation;
 import com.alibaba.water3.proxy.ProxyFactory;
 import com.alibaba.water3.reducer.Reducer;
-import com.alibaba.water3.reducer.Reducers;
+import com.alibaba.water3.utils.SysNamespace;
 import com.google.common.base.Throwables;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.MutablePair;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 
 import static com.alibaba.water3.core.ExtensionManager.getPlugins;
+import static com.alibaba.water3.utils.SysNamespace.CALLER;
 import static com.alibaba.water3.utils.SysNamespace.METHOD;
 
 /**
@@ -30,38 +34,34 @@ import static com.alibaba.water3.utils.SysNamespace.METHOD;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class ExtensionExecutor {
 
-    private static final ThreadLocal<Reducer<?, ?>> reducerCtx = new ThreadLocal<>();
-    private static final ThreadLocal<Object> resultCtx = new ThreadLocal<>();
+    private static final ConcurrentMap<Class<?>, Object> spiProxies = new ConcurrentHashMap<>();
+
+    private static final ThreadLocal<MutablePair<Reducer<?, ?>, Object>> ctx = ThreadLocal.withInitial(MutablePair::new);
 
     public static <SPI, T, R> R execute(Class<SPI> spi, BizExtensionInvoker<SPI, T> invoker, Reducer<T, R> reducer) {
         try {
-            reducerCtx.set(reducer);
-            invoker.invoke(ProxyFactory.getProxy(spi));
-            return (R) resultCtx.get();
+            ctx.get().setLeft(reducer);
+            Object invoke = invoker.invoke((SPI) spiProxies.computeIfAbsent(spi, ProxyFactory::newProxy));
+            if (reducer.isSameType()) {
+                return (R) invoke;
+            } else {
+                return (R) ctx.get().getRight();
+            }
         } finally {
-            reducerCtx.remove();
-            resultCtx.remove();
+            ctx.remove();
         }
     }
 
-    /**
-     * Proxy的回调
-     *
-     * @param spi
-     * @param method
-     * @param args
-     * @param <SPI>
-     * @return
-     * @throws Throwable
-     */
-    public static <SPI> Object _execute(Class<SPI> spi, Method method, Object[] args) throws Throwable {
+    public static <SPI> Object _execute(Class<SPI> spi, Method method, Object[] args, Reducer reducer) throws Throwable {
         if (!spi.isInterface()) {
             throw new WaterException(String.format("ExtensionSpi:[%s] is not interface.", spi));
         }
 
         try {
+            BizContext.addBusinessExt(SysNamespace.SPI, spi);
             BizContext.addBusinessExt(METHOD, method.getName());
-            Reducer reducer = Optional.ofNullable(reducerCtx.get()).orElse((Reducer) Reducers.firstOf());
+            BizContext.addBusinessExt(CALLER, "execute");
+            reducer = reducer != null ? reducer : Objects.requireNonNull(ctx.get().getLeft());
 
             SpiImpls impls = ExtensionManager.getSpiImpls(spi, args);
             List<Object> rs = new ArrayList<>(impls.size());
@@ -74,11 +74,17 @@ public class ExtensionExecutor {
                 }
             }
 
-            // 防止类转换异常, 强制返回null, result通过线程上下文返回
-            resultCtx.set(reducer.reduce(rs));
-            return null;
+            Object reduce = reducer.reduce(rs);
+            if (reducer.isSameType()) {
+                return reduce;
+            } else {
+                ctx.get().setRight(reduce);
+                return null;
+            }
         } finally {
+            BizContext.removeBusinessExt(CALLER);
             BizContext.removeBusinessExt(METHOD);
+            BizContext.removeBusinessExt(SysNamespace.SPI);
         }
     }
 
@@ -86,6 +92,9 @@ public class ExtensionExecutor {
         if (!spi.isInterface()) {
             throw new WaterException(String.format("ExtensionSpi:[%s] is not interface.", spi));
         }
+
+        BizContext.addBusinessExt(SysNamespace.SPI, spi);
+        BizContext.addBusinessExt(CALLER, "extExecute");
 
         try {
             SpiImpls impls = ExtensionManager.getSpiImpls(spi, args);
@@ -104,6 +113,9 @@ public class ExtensionExecutor {
             return reducer.reduce((Collection<T>) rs);
         } catch (Throwable t) {
             throw Throwables.propagate(t);
+        } finally {
+            BizContext.removeBusinessExt(CALLER);
+            BizContext.removeBusinessExt(SysNamespace.SPI);
         }
     }
 

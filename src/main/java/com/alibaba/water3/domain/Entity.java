@@ -20,6 +20,8 @@ public class Entity {
 
         public String group;
 
+        public boolean proxy;
+
         @Nonnull
         public final String clazz;
 

@@ -11,7 +11,6 @@ import java.util.Collection;
  */
 public interface Reducer<T, R> {
 
-
     /**
      * 是否中断方法执行
      *
@@ -28,4 +27,7 @@ public interface Reducer<T, R> {
      */
     R reduce(Collection<T> collection);
 
+    default boolean isSameType() {
+        return false;
+    }
 }

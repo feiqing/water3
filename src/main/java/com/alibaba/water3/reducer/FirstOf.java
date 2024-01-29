@@ -45,4 +45,9 @@ public class FirstOf<T> implements Reducer<T, T> {
 
         return null;
     }
+
+    @Override
+    public boolean isSameType() {
+        return true;
+    }
 }

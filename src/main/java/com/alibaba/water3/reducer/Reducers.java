@@ -1,6 +1,5 @@
 package com.alibaba.water3.reducer;
 
-import java.util.List;
 import java.util.function.Predicate;
 
 /**
@@ -11,65 +10,69 @@ public class Reducers {
 
 
     /**
-     * 返回第一个满足的结果
+     * 返回满足条件的第一个结果
      *
      * @param predicate
      * @param <T>
      * @return
      */
-    public static <T> Reducer<T, T> firstOf(Predicate<T> predicate) {
+    public static <T> FirstOf<T> firstOf(Predicate<T> predicate) {
         return new FirstOf<>(predicate);
     }
 
-    public static <T> Reducer<T, T> firstOf() {
-        return new FirstOf<>();
+    private static final FirstOf firstOf = new FirstOf();
+
+    public static <T> FirstOf<T> firstOf() {
+        return (FirstOf<T>) firstOf;
     }
 
     /**
-     * 满足条件的返回值收集
+     * 返回满足条件的所有结果
      *
      * @param predicate
      * @param <T>
      * @return
      */
-    public static <T> Reducer<T, List<T>> collect(Predicate<T> predicate) {
+    public static <T> Collect<T> collect(Predicate<T> predicate) {
         return new Collect<>(predicate);
     }
 
-    public static <T> Reducer<T, List<T>> collect() {
-        return new Collect<>();
+    private static final Collect collect = new Collect();
+
+    public static <T> Collect<T> collect() {
+        return (Collect<T>) collect;
     }
 
     /**
-     * 任意一个满足条件
+     * 返回是否有任意一个结果满足条件
      *
      * @param predicate
      * @param <T>
      * @return
      */
-    public static <T> Reducer<T, Boolean> anyMatch(Predicate<T> predicate) {
+    public static <T> AnyMatch<T> anyMatch(Predicate<T> predicate) {
         return new AnyMatch<>(predicate);
     }
 
     /**
-     * 所有条件都满足
+     * 返回是否所有结果都满足条件
      *
      * @param predicate
      * @param <T>
      * @return
      */
-    public static <T> Reducer<T, Boolean> allMatch(Predicate<T> predicate) {
+    public static <T> AllMatch<T> allMatch(Predicate<T> predicate) {
         return new AllMatch<>(predicate);
     }
 
     /**
-     * 所有条件都不满足
+     * 返回是否所有结果都不满足条件
      *
      * @param predicate
      * @param <T>
      * @return
      */
-    public static <T> Reducer<T, Boolean> noneMatch(Predicate<T> predicate) {
+    public static <T> NoneMatch<T> noneMatch(Predicate<T> predicate) {
         return new NoneMatch<>(predicate);
     }
 

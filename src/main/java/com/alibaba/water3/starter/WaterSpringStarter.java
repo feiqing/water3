@@ -25,9 +25,4 @@ public class WaterSpringStarter implements InitializingBean, ApplicationContextA
     public void afterPropertiesSet() throws Exception {
         ExtensionManager.register("XML", null);
     }
-
-//    @Bean
-//    public SpiProxyBeanRegister spiProxyBeanRegister() {
-//        return new SpiProxyBeanRegister();
-//    }
 }

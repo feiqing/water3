@@ -4,6 +4,7 @@ import com.alibaba.water3.domain.Tag;
 import com.alibaba.water3.exception.WaterException;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -66,6 +67,7 @@ public class DomParser {
         }
         extension.desc = element.attributeValue("desc");
         extension.group = parseGroup(file);
+        extension.proxy = BooleanUtils.toBoolean(element.attributeValue("proxy"));
 
         return extension;
     }

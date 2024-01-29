@@ -27,6 +27,7 @@ public class EntityConvertor {
 
             Entity.Extension extension = new Entity.Extension(extensionTag.clazz, base, businessMap);
             extension.group = extensionTag.group;
+            extension.proxy = extensionTag.proxy;
 
             extensionMap.put(Class.forName(extensionTag.clazz), extension);
         }
