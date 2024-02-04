@@ -21,7 +21,7 @@ import java.util.Map;
  */
 @Slf4j
 @Component
-public class SpiSpringProxyBeanRegister implements BeanDefinitionRegistryPostProcessor {
+public class SpiSpringProxyBeanAutoRegister implements BeanDefinitionRegistryPostProcessor {
 
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
