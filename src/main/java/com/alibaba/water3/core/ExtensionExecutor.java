@@ -22,8 +22,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 
 import static com.alibaba.water3.core.ExtensionManager.getPlugins;
-import static com.alibaba.water3.utils.SysNamespace.CALLER;
-import static com.alibaba.water3.utils.SysNamespace.METHOD;
 
 /**
  * @author jifang.zjf@alibaba-inc.com (FeiQing)
@@ -34,14 +32,14 @@ import static com.alibaba.water3.utils.SysNamespace.METHOD;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class ExtensionExecutor {
 
-    private static final ConcurrentMap<Class<?>, Object> spiProxies = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<Class<?>, Object> proxies = new ConcurrentHashMap<>();
 
     private static final ThreadLocal<MutablePair<Reducer<?, ?>, Object>> ctx = ThreadLocal.withInitial(MutablePair::new);
 
     public static <SPI, T, R> R execute(Class<SPI> spi, BizExtensionInvoker<SPI, T> invoker, Reducer<T, R> reducer) {
         try {
             ctx.get().setLeft(reducer);
-            Object invoke = invoker.invoke((SPI) spiProxies.computeIfAbsent(spi, ProxyFactory::newProxy));
+            Object invoke = invoker.invoke((SPI) proxies.computeIfAbsent(spi, ProxyFactory::newProxy));
             if (reducer.isSameType()) {
                 return (R) invoke;
             } else {
@@ -59,8 +57,8 @@ public class ExtensionExecutor {
 
         try {
             BizContext.addBusinessExt(SysNamespace.SPI, spi);
-            BizContext.addBusinessExt(METHOD, method.getName());
-            BizContext.addBusinessExt(CALLER, "execute");
+            BizContext.addBusinessExt(SysNamespace.METHOD, method.getName());
+            BizContext.addBusinessExt(SysNamespace.CALLER, "execute");
             reducer = reducer != null ? reducer : Objects.requireNonNull(ctx.get().getLeft());
 
             SpiImpls impls = ExtensionManager.getSpiImpls(spi, args);
@@ -82,8 +80,8 @@ public class ExtensionExecutor {
                 return null;
             }
         } finally {
-            BizContext.removeBusinessExt(CALLER);
-            BizContext.removeBusinessExt(METHOD);
+            BizContext.removeBusinessExt(SysNamespace.CALLER);
+            BizContext.removeBusinessExt(SysNamespace.METHOD);
             BizContext.removeBusinessExt(SysNamespace.SPI);
         }
     }
@@ -94,7 +92,7 @@ public class ExtensionExecutor {
         }
 
         BizContext.addBusinessExt(SysNamespace.SPI, spi);
-        BizContext.addBusinessExt(CALLER, "extExecute");
+        BizContext.addBusinessExt(SysNamespace.CALLER, "extExecute");
 
         try {
             SpiImpls impls = ExtensionManager.getSpiImpls(spi, args);
@@ -114,7 +112,7 @@ public class ExtensionExecutor {
         } catch (Throwable t) {
             throw Throwables.propagate(t);
         } finally {
-            BizContext.removeBusinessExt(CALLER);
+            BizContext.removeBusinessExt(SysNamespace.CALLER);
             BizContext.removeBusinessExt(SysNamespace.SPI);
         }
     }
