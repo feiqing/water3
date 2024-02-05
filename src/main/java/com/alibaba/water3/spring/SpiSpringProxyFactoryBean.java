@@ -21,6 +21,9 @@ public class SpiSpringProxyFactoryBean<SPI> implements FactoryBean<SPI> {
     @Setter
     private Reducer<?, ?> reducer;
 
+    @Setter
+    private boolean singleton = true;
+
     @Override
     public SPI getObject() {
         Preconditions.checkState(spi != null && reducer != null && reducer.isSameType());
@@ -36,6 +39,6 @@ public class SpiSpringProxyFactoryBean<SPI> implements FactoryBean<SPI> {
 
     @Override
     public boolean isSingleton() {
-        return true;
+        return singleton;
     }
 }
